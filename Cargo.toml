@@ -1,0 +1,20 @@
+[package]
+name = "lights_out"
+version = "0.1.0"
+authors = ["이민용 <me@newfolder.games>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.92"
+console_error_panic_hook = "0.1.7"
+serde = "1.0.203"
+serde_json = "1.0.120"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.42"
+
+[profile.release]
+opt-level = 3
