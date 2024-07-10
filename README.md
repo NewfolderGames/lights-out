@@ -1,1 +1,1 @@
-# lights-out
+# Panda Game
