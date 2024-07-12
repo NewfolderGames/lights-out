@@ -8,59 +8,58 @@ pub struct ModifierStorage {
 }
 
 impl ModifierStorage {
-    
+
     pub fn new() -> Self {
-        
+
         Self {
             modifiers: HashSet::new(),
             is_dirty: false,
             calculated: HashMap::new(),
         }
-        
+
     }
-    
+
     pub fn calculate(&mut self) {
-        
+
         let mut calculated: HashMap<String, f64> = HashMap::new();
-        let mut flat: HashMap<String, f64> = HashMap::new();
-        let mut multiplicative: HashMap<String, f64> = HashMap::new();
-        let mut multiply: HashMap<String, f64> = HashMap::new();
-        
+        let mut values: HashMap<String, (f64, f64, f64)> = HashMap::new();
+
         self.modifiers
             .iter()
             .for_each(|entry| {
-                
-               let map = match entry.get_calculation_method() {
-                   ModifierCalculationMethod::Addition => &mut flat,
-                   ModifierCalculationMethod::Multiplicative => &mut multiplicative,
-                   ModifierCalculationMethod::Multiply => &mut multiply,
-               };
 
-                let val = map.entry(entry.get_name().to_owned()).or_insert(0f64);
-                *val += entry.get_value();
+                let val = values.entry(entry.get_name().to_owned()).or_insert((0f64, 0f64, 1f64));
                 
-                self.calculated.insert(entry.get_name().to_owned(), 0f64);
-                
+                match entry.get_calculation_method() {
+                    ModifierCalculationMethod::Addition => val.0 += entry.get_value(),
+                    ModifierCalculationMethod::Multiplicative => val.1 += entry.get_value(),
+                    ModifierCalculationMethod::Multiply => val.2 += entry.get_value(),
+                };
+
             });
-        
-        self.calculated.keys().for_each(|key| {
-            
-            let flatValue = *flat.get(key).unwrap_or(&1f64);
-            let multiplicativeValue = *multiplicative.get(key).unwrap_or(&0f64);
-            let multiplyValue = *multiply.get(key).unwrap_or(&1f64);
-            
-            
+
+        values.iter().for_each(|(k, v)| {
+
+            let value = (v.0 + (1f64 + v.1)) * v.2;
+            calculated.insert(k.to_owned(), value);
             
         });
-        
+
         self.is_dirty = false;
-        
+        self.calculated = calculated;
+
     }
-    
+
     pub fn is_dirty(&self) -> bool {
-        
+
         self.is_dirty
-        
+
     }
     
+    pub fn get_calculated(&self) -> &HashMap<String, f64> {
+        
+        &self.calculated
+        
+    }
+
 }
