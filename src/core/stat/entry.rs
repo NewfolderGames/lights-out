@@ -48,6 +48,12 @@ impl ModifierEntry {
         
     }
     
+    pub fn add_count(&mut self, count: i32) {
+        
+        self.count += count;
+        
+    }
+    
 }
 
 #[derive(Copy, Clone)]
