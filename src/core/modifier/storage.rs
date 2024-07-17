@@ -57,7 +57,7 @@ impl ModifierStorage {
 
     }
 
-    pub fn get_calculated(&self) -> &HashMap<String, f64> {
+    pub fn calculated(&self) -> &HashMap<String, f64> {
 
         &self.calculated
 

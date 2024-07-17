@@ -19,7 +19,7 @@ pub struct BuildingAsset {
 }
 
 #[derive(Deserialize)]
-struct BuildingPrice {
+pub struct BuildingPrice {
 
     /// Resource name.
     pub name: String,
@@ -29,7 +29,7 @@ struct BuildingPrice {
 }
 
 #[derive(Deserialize)]
-struct BuildingProduction {
+pub struct BuildingProduction {
 
     /// Production name.
     pub name: String,
@@ -43,7 +43,7 @@ struct BuildingProduction {
 }
 
 #[derive(Deserialize)]
-struct BuildingUpkeep {
+pub struct BuildingUpkeep {
 
     /// Resource name.
     pub name: String,
@@ -53,7 +53,7 @@ struct BuildingUpkeep {
 }
 
 #[derive(Deserialize)]
-struct BuildingOutput {
+pub struct BuildingOutput {
 
     /// Resource name.
     pub name: String,
@@ -63,7 +63,7 @@ struct BuildingOutput {
 }
 
 #[derive(Deserialize)]
-struct BuildingModifier {
+pub struct BuildingModifier {
 
     /// Name of the modifier
     pub name: String,
