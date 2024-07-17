@@ -12,49 +12,59 @@ pub struct BuildingAsset {
     pub prices: Vec<BuildingPrice>,
     /// Size of the building.
     pub size: f64,
-    
-    /// Resource upkeep of the building.
-    pub upkeeps: Vec<BuildingUpkeep>,
-    /// Resource output of the building.
-    pub outputs: Vec<BuildingOutput>,
-    /// Modifiers generated from the building.
-    pub modifiers: Vec<BuildingModifier>,
+
+    /// Productions of the buildings.
+    pub productions: Vec<BuildingProduction>,
 
 }
 
 #[derive(Deserialize)]
 struct BuildingPrice {
-    
+
     /// Resource name.
     pub name: String,
     /// Resource value.
     pub value: f64,
-    
+
+}
+
+#[derive(Deserialize)]
+struct BuildingProduction {
+
+    /// Production name.
+    pub name: String,
+    /// Resource upkeep of the building production.
+    pub upkeeps: Vec<BuildingUpkeep>,
+    /// Resource output of the building production.
+    pub outputs: Vec<BuildingOutput>,
+    /// Modifiers generated from the building production.
+    pub modifiers: Vec<BuildingModifier>,
+
 }
 
 #[derive(Deserialize)]
 struct BuildingUpkeep {
-    
+
     /// Resource name.
     pub name: String,
     /// Resource value.
     pub value: f64,
-    
+
 }
 
 #[derive(Deserialize)]
 struct BuildingOutput {
-    
+
     /// Resource name.
     pub name: String,
     /// Resource value.
     pub value: f64,
-    
+
 }
 
 #[derive(Deserialize)]
 struct BuildingModifier {
-    
+
     /// Name of the modifier
     pub name: String,
     /// Base value of the modifier.
@@ -63,5 +73,5 @@ struct BuildingModifier {
     pub value: f64,
     /// Calculation method of the modifier.
     pub calculation: String,
-    
+
 }
