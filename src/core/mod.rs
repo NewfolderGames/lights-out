@@ -1,2 +1,2 @@
 mod thing;
-mod stat;
+mod modifier;
