@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use super::BuildingAsset;
 
 pub struct Building {
@@ -6,7 +7,7 @@ pub struct Building {
 
     count: i32,
     active_count: i32,
-    active_productions: Vec<String>,
+    active_productions: HashSet<String>,
 
 }
 
@@ -18,7 +19,7 @@ impl From<BuildingAsset> for Building {
             asset,
             count: 0,
             active_count: 0,
-            active_productions: Vec::new(),
+            active_productions: HashSet::new(),
         }
 
     }
