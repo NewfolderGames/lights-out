@@ -18,25 +18,25 @@ impl ModifierEntry {
 
     }
 
-    pub fn get_name(&self) -> &str {
+    pub fn name(&self) -> &str {
 
         self.name.as_str()
 
     }
 
-    pub fn get_value(&self) -> f64 {
+    pub fn value(&self) -> f64 {
 
         self.value
 
     }
 
-    pub fn get_calculation_method(&self) -> ModifierCalculationMethod {
+    pub fn calculation_method(&self) -> ModifierCalculationMethod {
 
         self.calculation
 
     }
 
-    pub fn get_count(&self) -> i32 {
+    pub fn count(&self) -> i32 {
 
         self.count
 

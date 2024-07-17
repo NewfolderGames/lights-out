@@ -29,12 +29,12 @@ impl ModifierStorage {
             .iter()
             .for_each(|(_, entry)| {
 
-                let val = values.entry(entry.get_name().to_owned()).or_insert((0f64, 0f64, 1f64, entry.get_count()));
+                let val = values.entry(entry.name().to_owned()).or_insert((0f64, 0f64, 1f64, entry.count()));
 
-                match entry.get_calculation_method() {
-                    ModifierCalculationMethod::Addition => val.0 += entry.get_value(),
-                    ModifierCalculationMethod::Multiplicative => val.1 += entry.get_value(),
-                    ModifierCalculationMethod::Multiply => val.2 += entry.get_value(),
+                match entry.calculation_method() {
+                    ModifierCalculationMethod::Addition => val.0 += entry.value(),
+                    ModifierCalculationMethod::Multiplicative => val.1 += entry.value(),
+                    ModifierCalculationMethod::Multiply => val.2 += entry.value(),
                 };
 
             });
