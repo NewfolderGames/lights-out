@@ -52,4 +52,11 @@ impl Game {
         
     }
     
+    #[wasm_bindgen]
+    pub fn tick(&mut self) {
+        
+        
+        
+    }
+    
 }
