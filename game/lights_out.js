@@ -152,6 +152,12 @@ export class Game {
     tick() {
         wasm.game_tick(this.__wbg_ptr);
     }
+    /**
+    * @param {boolean} active
+    */
+    set_debug_mode(active) {
+        wasm.game_set_debug_mode(this.__wbg_ptr, active);
+    }
 }
 
 async function __wbg_load(module, imports) {

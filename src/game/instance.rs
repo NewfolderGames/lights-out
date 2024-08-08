@@ -3,6 +3,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 #[wasm_bindgen]
 pub struct Game {
     is_playing: bool,
+    is_debug_mode: bool,
 }
 
 #[wasm_bindgen]
@@ -19,6 +20,7 @@ impl Game {
 
         Self {
             is_playing: false,
+            is_debug_mode: false,
         }
 
     }
@@ -56,6 +58,13 @@ impl Game {
     pub fn tick(&mut self) {
         
         
+        
+    }
+
+    #[wasm_bindgen]
+    pub fn set_debug_mode(&mut self, active: bool) {
+        
+        self.is_debug_mode = active;
         
     }
     
