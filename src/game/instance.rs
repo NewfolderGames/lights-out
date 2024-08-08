@@ -42,30 +42,30 @@ impl Game {
 
     #[wasm_bindgen]
     pub fn pause(&mut self) {
-        
+
         self.is_playing = false;
-        
+
     }
-    
+
     #[wasm_bindgen]
     pub fn resume(&mut self) {
-        
+
         self.is_playing = true;
-        
+
     }
-    
+
     #[wasm_bindgen]
     pub fn tick(&mut self) {
-        
-        
-        
+
+
+
     }
 
     #[wasm_bindgen]
     pub fn set_debug_mode(&mut self, active: bool) {
-        
+
         self.is_debug_mode = active;
-        
+
     }
-    
+
 }
