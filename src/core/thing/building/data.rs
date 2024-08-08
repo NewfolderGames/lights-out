@@ -14,6 +14,8 @@ pub struct Building {
     modifier_storage: ModifierStorage,
     calculated_upkeep: HashMap<String, f64>,
     calculated_output: HashMap<String, f64>,
+    
+    is_unlocked: bool,
 
 }
 
@@ -30,6 +32,7 @@ impl From<BuildingAsset> for Building {
             modifier_storage: ModifierStorage::new(),
             calculated_upkeep: HashMap::new(),
             calculated_output: HashMap::new(),
+            is_unlocked: false,
         }
 
     }
