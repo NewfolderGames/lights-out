@@ -23,10 +23,36 @@ impl ModifierEntry {
         self.name.as_str()
 
     }
+    
+    pub fn key(&self) -> String {
+        
+        let mut key = self.name.clone();
+        
+        match self.calculation {
+            ModifierCalculationMethod::Addition => key.push_str(".addition"),
+            ModifierCalculationMethod::Multiplicative => key.push_str(".multiplicative"),
+            ModifierCalculationMethod::Multiply => key.push_str(".multiply"),
+        }
+        
+        key
+        
+    }
 
     pub fn value(&self) -> f64 {
 
         self.value
+
+    }
+
+    pub fn set_value(&mut self, value: f64) {
+
+        self.value = value;
+
+    }
+
+    pub fn add_value(&mut self, value: f64) {
+
+        self.value += value;
 
     }
 

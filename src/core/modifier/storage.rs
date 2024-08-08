@@ -50,6 +50,29 @@ impl ModifierStorage {
         self.calculated = calculated;
 
     }
+    
+    pub fn clear(&mut self) {
+        
+        self.is_dirty = false;
+        self.modifiers.clear();
+        self.calculated.clear();
+        
+    }
+    
+    pub fn add_modifier(&mut self, modifier_entry: ModifierEntry) {
+        
+        if let Some(entry) = self.modifiers.get_mut(modifier_entry.key().as_str()) {
+            
+            entry.add_count(modifier_entry.count());
+            entry.add_value(modifier_entry.value());
+            
+        } else {
+
+            self.modifiers.insert(modifier_entry.key(), modifier_entry);
+            
+        }
+        
+    }
 
     pub fn is_dirty(&self) -> bool {
 

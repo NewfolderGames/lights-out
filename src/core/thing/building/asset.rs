@@ -67,8 +67,6 @@ pub struct BuildingModifier {
 
     /// Name of the modifier
     pub name: String,
-    /// Base value of the modifier.
-    pub base: f64,
     /// Generated value of the modifier.
     pub value: f64,
     /// Calculation method of the modifier.

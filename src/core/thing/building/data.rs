@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use crate::core::modifier::ModifierStorage;
+use crate::core::modifier::{ModifierEntry};
 use super::BuildingAsset;
 
 pub struct Building {
@@ -11,9 +11,9 @@ pub struct Building {
     active_productions: HashSet<String>,
 
     is_dirty: bool,
-    modifier_storage: ModifierStorage,
     calculated_upkeep: HashMap<String, f64>,
     calculated_output: HashMap<String, f64>,
+    calculated_modifiers: HashMap<String, ModifierEntry>,
     
     is_unlocked: bool,
 
@@ -29,9 +29,9 @@ impl From<BuildingAsset> for Building {
             active_count: 0,
             active_productions: HashSet::new(),
             is_dirty: false,
-            modifier_storage: ModifierStorage::new(),
             calculated_upkeep: HashMap::new(),
             calculated_output: HashMap::new(),
+            calculated_modifiers: HashMap::new(),
             is_unlocked: false,
         }
 
@@ -49,6 +49,8 @@ impl Building {
 
     pub fn calculate(&mut self) {
 
+        if !self.is_dirty { return; }
+        
         let mut upkeep: HashMap<String, f64> = HashMap::new();
         let mut output: HashMap<String, f64> = HashMap::new();
         
@@ -79,9 +81,20 @@ impl Building {
         
         self.calculated_upkeep = upkeep;
         self.calculated_output = output;
-        self.modifier_storage.calculate();
         
         self.is_dirty = false;
+
+    }
+    
+    pub fn calculated_upkeep(&self) -> &HashMap<String, f64> {
+        
+        &self.calculated_upkeep
+        
+    }
+
+    pub fn calculated_output(&self) -> &HashMap<String, f64> {
+
+        &self.calculated_output
 
     }
 
