@@ -1,5 +1,4 @@
-let game;
-let wasm;
+let ticks = 0;
 
 self.onmessage = e => {
 
@@ -7,18 +6,22 @@ self.onmessage = e => {
 
 	switch (e.data.topic) {
 		case "gameReady": gameReadyEvent(e); break;
+		case "startTicker": startTickerEvent(e); break;
 	}
 
 };
 
-async function gameReadyEvent(e) {
+function gameReadyEvent(e) {
 
-	console.log("Game Ready!");
-	console.log("Starting ticker.");
+	self.postMessage({ topic: "workerReady", value: null });
+
+}
+
+function startTickerEvent(e) {
 
 	setInterval(() => {
 
-		self.postMessage({ topic: "tick", value: null });
+		self.postMessage({ topic: "tick", value: ++ticks });
 
 	}, 1000);
 
