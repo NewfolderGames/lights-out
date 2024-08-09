@@ -15,5 +15,42 @@
             <div class="loading-description"></div>
         </div>
     </div>
+    <header id="game-header">
+        <section class="left">
+            <span class="title">Lights Out</span>
+            <span class="version">0.0.1</span>
+            <span class="creator">by NewfolderGames</span>
+        </section>
+        <section class="center"></section>
+        <section class="right">
+            <span class="save">Save</span>
+            <span class="options">Options</span>
+        </section>
+    </header>
+    <main id="game">
+        <aside id="resource-container"></aside>
+        <article id="tab-container">
+            <section id="tab-lighthouse" class="tab">
+                <div id="tab-lighthouse-image-wrapper"></div>
+                <div id="tab-lighthouse-buttons"></div>
+            </section>
+            <section id="tab-building" class="tab"></section>
+            <section id="tab-technology" class="tab">
+                <div id="tab-technology-locked"></div>
+                <div id="tab-technology-researchable"></div>
+                <div id="tab-technology-researched"></div>
+            </section>
+            <section id="tab-upgrade" class="tab">
+                <div id="tab-upgrade-locked"></div>
+                <div id="tab-upgrade-researchable"></div>
+                <div id="tab-upgrade-researched"></div>
+            </section>
+            <section id="tab-stats" class="tab"></section>
+        </article>
+        <aside id="log-container">
+            <ul id="log-list"></ul>
+        </aside>
+    </main>
+    <nav id="tab-list"></nav>
 </body>
 </html>
