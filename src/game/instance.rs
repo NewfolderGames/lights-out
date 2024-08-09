@@ -68,6 +68,13 @@ impl Game {
         
 
     }
+    
+    #[wasm_bindgen]
+    pub fn rerender(&self) {
+        
+        
+        
+    }
 
     #[wasm_bindgen]
     pub fn set_debug_mode(&mut self, active: bool) {
