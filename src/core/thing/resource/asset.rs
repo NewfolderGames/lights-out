@@ -7,15 +7,15 @@ pub struct ResourceAsset {
     pub name: String,
     /// Category of the resource.
     pub category: String,
-    
+
     // Modifiers that resource passively generates.
-    pub modifiers: Vec<ResoureModifiers>,
-    
+    pub modifiers: Vec<ResourceModifiers>,
+
 }
 
 #[derive(Deserialize)]
-pub struct ResoureModifiers {
-    
+pub struct ResourceModifiers {
+
     /// Name of the modifier
     pub name: String,
     /// Base value of the modifier.
@@ -24,5 +24,5 @@ pub struct ResoureModifiers {
     pub value: f64,
     /// Calculation method of the modifier.
     pub calculation: String,
-    
+
 }
