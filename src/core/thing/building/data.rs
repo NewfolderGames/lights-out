@@ -1,5 +1,5 @@
 use std::collections::{HashMap, HashSet};
-use crate::core::modifier::{ModifierEntry};
+use crate::core::modifier::{ModifierCalculationMethod, ModifierEntry, ModifierStorage};
 use super::BuildingAsset;
 
 pub struct Building {
@@ -13,7 +13,7 @@ pub struct Building {
     is_dirty: bool,
     calculated_upkeep: HashMap<String, f64>,
     calculated_output: HashMap<String, f64>,
-    calculated_modifiers: HashMap<String, ModifierEntry>,
+    calculated_modifiers: ModifierStorage,
     
     is_unlocked: bool,
 
@@ -31,7 +31,7 @@ impl From<BuildingAsset> for Building {
             is_dirty: false,
             calculated_upkeep: HashMap::new(),
             calculated_output: HashMap::new(),
-            calculated_modifiers: HashMap::new(),
+            calculated_modifiers: ModifierStorage::new(),
             is_unlocked: false,
         }
 
@@ -53,6 +53,7 @@ impl Building {
         
         let mut upkeep: HashMap<String, f64> = HashMap::new();
         let mut output: HashMap<String, f64> = HashMap::new();
+        let mut modifiers = ModifierStorage::new();
         
         self.active_productions.iter().for_each(|production_name| {
             
@@ -75,12 +76,28 @@ impl Building {
                         output.insert(v.name.to_string(), v.value * self.active_count as f64);
                     });
                 
+                entry.modifiers
+                    .iter()
+                    .for_each(|v| {
+
+                        let calculation_method = match v.name.as_str() {
+                            "addition" => ModifierCalculationMethod::Addition,
+                            "multiplicative" => ModifierCalculationMethod::Multiplicative,
+                            "multiply" => ModifierCalculationMethod::Multiply,
+                            _ => panic!("wronf modifier calculation method"),
+                        };
+                        
+                        modifiers.add_modifier(ModifierEntry::new(v.name.clone(), v.value, self.active_count, calculation_method));
+                        
+                    });
+                
             }
             
         });
         
         self.calculated_upkeep = upkeep;
         self.calculated_output = output;
+        self.calculated_modifiers = modifiers;
         
         self.is_dirty = false;
 
@@ -95,6 +112,12 @@ impl Building {
     pub fn calculated_output(&self) -> &HashMap<String, f64> {
 
         &self.calculated_output
+
+    }
+
+    pub fn calculated_modifiers(&self) -> &ModifierStorage {
+
+        &self.calculated_modifiers
 
     }
 
