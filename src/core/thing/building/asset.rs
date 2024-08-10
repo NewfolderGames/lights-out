@@ -40,7 +40,7 @@ pub struct BuildingProduction {
     /// Modifiers generated from the building production.
     pub modifiers: Vec<BuildingModifier>,
     /// Storage size generated from the building production.
-    pub storage: Vec<BuildingStorage>,
+    pub storages: Vec<BuildingStorage>,
 
 }
 

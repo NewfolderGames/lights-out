@@ -13,7 +13,7 @@
       "upkeeps": [],
       "outputs": [],
       "modifiers": [],
-      "storage": [
+      "storages": [
         {
           "name": "wood",
           "value": 10
