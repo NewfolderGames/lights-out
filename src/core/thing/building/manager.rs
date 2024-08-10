@@ -1,15 +1,13 @@
-use std::collections::HashMap;
-use crate::core::modifier::{ModifierEntry, ModifierStorage};
+use crate::core::modifier::ModifierStorage;
 use crate::core::thing::building::{Building, BuildingAsset};
+use std::collections::hash_map::Iter;
+use std::collections::HashMap;
 
 pub struct BuildingManager {
     
     buildings: HashMap<String, Building>,
 
     is_dirty: bool,
-    calculated_upkeep: HashMap<String, f64>,
-    calculated_output: HashMap<String, f64>,
-    calculated_modifiers: HashMap<String, ModifierEntry>,
 
 }
 
@@ -20,9 +18,6 @@ impl BuildingManager {
         Self {
             buildings: HashMap::new(),
             is_dirty: false,
-            calculated_modifiers: HashMap::new(),
-            calculated_upkeep: HashMap::new(),
-            calculated_output: HashMap::new(),
         }
         
     }
@@ -30,6 +25,7 @@ impl BuildingManager {
     pub fn calculate(&mut self, modifier_storage: &ModifierStorage) {
         
         if !self.is_dirty { return; }
+        
         
         self.is_dirty = false;
         
@@ -63,6 +59,73 @@ impl BuildingManager {
         self.buildings.insert(building.asset().name.clone(), building);
 
     }
+
+    pub fn iter(&self) -> Iter<String, Building> {
+
+        self.buildings.iter()
+
+    }
+
+    pub fn get(&self, name: &str) -> Option<&Building> {
+
+        self.buildings.get(name)
+
+    }
+
+    pub fn unlock(&mut self, name: &str) {
+
+        if let Some(v) = self.buildings.get_mut(name) { v.unlock() }
+
+    }
+
+    pub fn unlock_production(&mut self, name: &str, production: &str) {
+
+        if let Some(v) = self.buildings.get_mut(name) { v.unlock_production(production) }
+
+    }
+
+    pub fn add_count(&mut self, name: &str, count: i32) {
+
+        if let Some(v) = self.buildings.get_mut(name) {
+
+            v.add_count(count);
+            self.is_dirty = true;
+
+        }
+
+    }
+
+    pub fn set_count(&mut self, name: &str, count: i32) {
+
+        if let Some(v) = self.buildings.get_mut(name) {
+
+            v.set_count(count);
+            self.is_dirty = true;
+
+        }
+
+    }
+
+    pub fn add_active_count(&mut self, name: &str, count: i32) {
+
+        if let Some(v) = self.buildings.get_mut(name) {
+
+            v.add_active_count(count);
+            self.is_dirty = true;
+
+        }
+
+    }
+
+    pub fn set_active_count(&mut self, name: &str, count: i32) {
+
+        if let Some(v) = self.buildings.get_mut(name) {
+
+            v.set_active_count(count);
+            self.is_dirty = true
+
+        }
+
+    }
     
 }
-

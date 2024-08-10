@@ -1,18 +1,16 @@
 pub struct ModifierEntry {
     name: String,
     value: f64,
-    count: i32,
     calculation: ModifierCalculationMethod,
 }
 
 impl ModifierEntry {
 
-    pub fn new(name: String, value: f64, count: i32, calculation: ModifierCalculationMethod) -> Self {
+    pub fn new(name: String, value: f64, calculation: ModifierCalculationMethod) -> Self {
 
         Self {
             name,
             value,
-            count,
             calculation
         }
 
@@ -26,15 +24,7 @@ impl ModifierEntry {
     
     pub fn key(&self) -> String {
         
-        let mut key = self.name.clone();
-        
-        match self.calculation {
-            ModifierCalculationMethod::Addition => key.push_str(".addition"),
-            ModifierCalculationMethod::Multiplicative => key.push_str(".multiplicative"),
-            ModifierCalculationMethod::Multiply => key.push_str(".multiply"),
-        }
-        
-        key
+        format!("{}.{}", self.name, self.calculation.key())
         
     }
 
@@ -62,29 +52,27 @@ impl ModifierEntry {
 
     }
 
-    pub fn count(&self) -> i32 {
-
-        self.count
-
-    }
-
-    pub fn set_count(&mut self, count: i32) {
-
-        self.count = count;
-
-    }
-
-    pub fn add_count(&mut self, count: i32) {
-
-        self.count += count;
-
-    }
-
 }
 
 #[derive(Copy, Clone)]
 pub enum ModifierCalculationMethod {
+    Base,
     Addition,
     Multiplicative,
     Multiply,
+}
+
+impl ModifierCalculationMethod {
+    
+    pub fn key(&self) -> &'static str {
+
+        match self {
+            ModifierCalculationMethod::Base => "base",
+            ModifierCalculationMethod::Addition => "addition",
+            ModifierCalculationMethod::Multiplicative => "multiplicative",
+            ModifierCalculationMethod::Multiply => "multiply",
+        }
+        
+    }
+    
 }
