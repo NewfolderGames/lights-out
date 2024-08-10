@@ -17,6 +17,7 @@ pub struct Building {
     calculated_storages: HashMap<String, f64>,
     
     is_unlocked: bool,
+    unlocked_productions: HashSet<String>,
 
 }
 
@@ -25,7 +26,10 @@ impl From<BuildingAsset> for Building {
     fn from(asset: BuildingAsset) -> Self {
 
         let mut active_productions = HashSet::new();
-        active_productions.insert("default");
+        active_productions.insert("default".to_string());
+        
+        let mut unlocked_productions = HashSet::new();
+        unlocked_productions.insert("default".to_string());
         
         Self {
             asset,
@@ -38,6 +42,7 @@ impl From<BuildingAsset> for Building {
             calculated_modifiers: ModifierStorage::new(),
             calculated_storages: HashMap::new(),
             is_unlocked: false,
+            unlocked_productions: unlocked_productions,
         }
 
     }
