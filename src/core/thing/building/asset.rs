@@ -39,6 +39,8 @@ pub struct BuildingProduction {
     pub outputs: Vec<BuildingOutput>,
     /// Modifiers generated from the building production.
     pub modifiers: Vec<BuildingModifier>,
+    /// Storage size generated from the building production.
+    pub storage: Vec<BuildingStorage>,
 
 }
 
@@ -54,6 +56,16 @@ pub struct BuildingUpkeep {
 
 #[derive(Deserialize)]
 pub struct BuildingOutput {
+
+    /// Resource name.
+    pub name: String,
+    /// Resource value.
+    pub value: f64,
+
+}
+
+#[derive(Deserialize)]
+pub struct BuildingStorage {
 
     /// Resource name.
     pub name: String,

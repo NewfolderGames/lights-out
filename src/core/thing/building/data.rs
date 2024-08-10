@@ -14,6 +14,7 @@ pub struct Building {
     calculated_upkeep: HashMap<String, f64>,
     calculated_output: HashMap<String, f64>,
     calculated_modifiers: ModifierStorage,
+    calculated_storage: HashMap<String, f64>,
     
     is_unlocked: bool,
 
@@ -32,6 +33,7 @@ impl From<BuildingAsset> for Building {
             calculated_upkeep: HashMap::new(),
             calculated_output: HashMap::new(),
             calculated_modifiers: ModifierStorage::new(),
+            calculated_storage: HashMap::new(),
             is_unlocked: false,
         }
 
@@ -54,6 +56,7 @@ impl Building {
         let mut upkeep: HashMap<String, f64> = HashMap::new();
         let mut output: HashMap<String, f64> = HashMap::new();
         let mut modifiers = ModifierStorage::new();
+        let mut storage: HashMap<String, f64> = HashMap::new();
         
         self.active_productions.iter().for_each(|production_name| {
             
@@ -90,6 +93,12 @@ impl Building {
                         modifiers.add_modifier(ModifierEntry::new(v.name.clone(), v.value, self.active_count, calculation_method));
                         
                     });
+
+                entry.storage
+                    .iter()
+                    .for_each(|v| {
+                        storage.insert(v.name.to_string(), v.value * self.active_count as f64);
+                    });
                 
             }
             
@@ -98,6 +107,7 @@ impl Building {
         self.calculated_upkeep = upkeep;
         self.calculated_output = output;
         self.calculated_modifiers = modifiers;
+        self.calculated_storage = storage;
         
         self.is_dirty = false;
 
