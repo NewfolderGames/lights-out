@@ -1,2 +1,3 @@
 pub mod game;
-mod core;
+pub mod core;
+pub mod assets;

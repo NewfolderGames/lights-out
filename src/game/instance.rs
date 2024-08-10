@@ -1,5 +1,6 @@
 use wasm_bindgen::prelude::wasm_bindgen;
-use crate::core::ThingManager;
+use crate::assets::get_asset_list;
+use crate::core::{ThingManager, ThingManagerLoadType};
 
 #[wasm_bindgen]
 pub struct Game {
@@ -10,6 +11,8 @@ pub struct Game {
     is_debug_mode: bool,
     
 }
+
+// Constructor
 
 #[wasm_bindgen]
 impl Game {
@@ -42,6 +45,8 @@ impl Default for Game {
     }
 
 }
+
+// Gameplay
 
 #[wasm_bindgen]
 impl Game {
@@ -83,4 +88,42 @@ impl Game {
 
     }
 
+}
+
+// Thing loading
+
+#[wasm_bindgen]
+impl Game {
+
+    #[wasm_bindgen]
+    pub fn load_thing_from_string(&mut self, thing_type: &str, thing: &str) {
+        
+        let result = match thing_type {
+            "building" => self.thing_manager.load_from_str(ThingManagerLoadType::Building, thing),
+            _ => Err("wrong thing type".to_string()),
+        };
+        
+        if let Err(message) = result {
+            
+            eprintln!("thing loader failed to load thing from string, {message}");
+            
+        } else {
+            
+            println!("thing loader {thing_type} loaded");
+            
+        }
+        
+    }
+
+    #[wasm_bindgen]
+    pub fn load_things(&mut self) {
+        
+        let list = get_asset_list();
+        list.iter()
+            .for_each(|(thing_type, thing)| {
+                self.load_thing_from_string(thing_type, thing)
+            })
+        
+    }
+    
 }
