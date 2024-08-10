@@ -1,0 +1,28 @@
+{
+  "name": "stockpile",
+  "category": "storage",
+  "prices": [
+    {
+      "wood": 10
+    }
+  ],
+  "size": 1,
+  "productions": [
+    {
+      "name": "default",
+      "upkeeps": [],
+      "outputs": [],
+      "modifiers": [],
+      "storage": [
+        {
+          "name": "wood",
+          "value": 10
+        },
+        {
+          "name": "stone",
+          "value": 10
+        }
+      ]
+    }
+  ]
+}

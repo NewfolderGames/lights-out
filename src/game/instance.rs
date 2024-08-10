@@ -122,7 +122,7 @@ impl Game {
         list.iter()
             .for_each(|(thing_type, thing)| {
                 self.load_thing_from_string(thing_type, thing)
-            })
+            });
         
     }
     

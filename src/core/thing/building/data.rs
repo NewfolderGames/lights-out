@@ -24,6 +24,9 @@ impl From<BuildingAsset> for Building {
 
     fn from(asset: BuildingAsset) -> Self {
 
+        let mut active_productions = HashSet::new();
+        active_productions.insert("default");
+        
         Self {
             asset,
             count: 0,

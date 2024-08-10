@@ -38,15 +38,6 @@ function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
 }
 
-function addHeapObject(obj) {
-    if (heap_next === heap.length) heap.push(heap.length + 1);
-    const idx = heap_next;
-    heap_next = heap[idx];
-
-    heap[idx] = obj;
-    return idx;
-}
-
 let WASM_VECTOR_LEN = 0;
 
 const cachedTextEncoder = (typeof TextEncoder !== 'undefined' ? new TextEncoder('utf-8') : { encode: () => { throw Error('TextEncoder not available') } } );
@@ -103,6 +94,15 @@ function passStringToWasm0(arg, malloc, realloc) {
     return ptr;
 }
 
+function addHeapObject(obj) {
+    if (heap_next === heap.length) heap.push(heap.length + 1);
+    const idx = heap_next;
+    heap_next = heap[idx];
+
+    heap[idx] = obj;
+    return idx;
+}
+
 let cachedInt32Memory0 = null;
 
 function getInt32Memory0() {
@@ -153,10 +153,31 @@ export class Game {
         wasm.game_tick(this.__wbg_ptr);
     }
     /**
+    */
+    rerender() {
+        wasm.game_rerender(this.__wbg_ptr);
+    }
+    /**
     * @param {boolean} active
     */
     set_debug_mode(active) {
         wasm.game_set_debug_mode(this.__wbg_ptr, active);
+    }
+    /**
+    * @param {string} thing_type
+    * @param {string} thing
+    */
+    load_thing_from_string(thing_type, thing) {
+        const ptr0 = passStringToWasm0(thing_type, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(thing, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.game_load_thing_from_string(this.__wbg_ptr, ptr0, len0, ptr1, len1);
+    }
+    /**
+    */
+    load_things() {
+        wasm.game_load_things(this.__wbg_ptr);
     }
 }
 

@@ -6,7 +6,13 @@ await initWasm();
 
 let PRINT_TICK = false;
 
+const $loading = document.getElementById("loading");
+const $loadingDescription = $loading.querySelector(":scope .loading-description");
+
 // Game
+
+$loading.classList.add("active");
+$loadingDescription.textContent = "Initializing game";
 
 const game = new Game();
 const gameWorker = new Worker("./game.js");
@@ -16,32 +22,22 @@ gameWorker.onmessage = (e) => {
 	if (!e.data.topic) return;
 
 	switch (e.data.topic) {
-		case "workerReady": workerReadyEvent(e); break;
 		case "tick": tickEvent(e); break;
 	}
 
 }
 
-// Loading
+// Things
 
-const $loading = document.getElementById("loading");
-const $loadingDescription = $loading.querySelector(":scope .loading-description");
+$loadingDescription.textContent = "Loading things";
+game.load_things();
 
-$loading.classList.add("active");
-$loadingDescription.textContent = "Initializing game";
+// Start Game
+
+$loading.classList.remove("active");
+gameWorker.postMessage({ topic: "startTicker", value: null });
 
 // Event Handlers
-
-function workerReadyEvent(e) {
-
-	console.info("Worker Ready!");
-	console.info("Starting ticker.");
-
-	gameWorker.postMessage({ topic: "startTicker", value: null });
-
-	$loading.classList.remove("active");
-
-}
 
 function tickEvent(e) {
 
