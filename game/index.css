@@ -71,6 +71,7 @@ body {
     }
 
     & .left {
+        flex-basis: 360px;
         & .title { font-weight: bold; }
         & .version { font-size: 0.75em; }
         & .creator {
@@ -78,8 +79,13 @@ body {
             color: #888888;
         }
     }
-    & .center { flex: 1; }
+    & .center {
+        flex: 1;
+        text-align: center;
+    }
     & .right {
+        flex-basis: 360px;
+        text-align: right;
         & > span {
             color: #888888;
             &:hover {
@@ -107,11 +113,20 @@ body {
 }
 
 #tab-container {
+
     flex: 1;
     padding: 16px;
     border: 1px solid var(--color-lightgrey);
     border-top: none;
     border-bottom: none;
+
+    & > section {
+        display: none;
+        &.active {
+            display: block;
+        }
+    }
+
 }
 
 #log-container {
