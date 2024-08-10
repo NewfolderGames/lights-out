@@ -29,19 +29,19 @@ impl ModifierStorage {
             .iter()
             .for_each(|(_, entry)| {
 
-                let val = values.entry(entry.name().to_owned()).or_insert((0f64, 0f64, 1f64, entry.count()));
+                let val = values.entry(entry.name().to_owned()).or_insert((1f64, 1f64, 1f64, entry.count()));
 
                 match entry.calculation_method() {
                     ModifierCalculationMethod::Addition => val.0 += entry.value(),
                     ModifierCalculationMethod::Multiplicative => val.1 += entry.value(),
-                    ModifierCalculationMethod::Multiply => val.2 += entry.value(),
+                    ModifierCalculationMethod::Multiply => val.2 *= entry.value(),
                 };
 
             });
 
         values.iter().for_each(|(k, v)| {
 
-            let value = (v.0 + (1f64 + v.1)) * v.2 * v.3 as f64;
+            let value = v.0 * v.1 * v.2 * v.3 as f64;
             calculated.insert(k.to_owned(), value);
 
         });
