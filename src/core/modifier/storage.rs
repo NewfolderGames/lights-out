@@ -34,7 +34,7 @@ impl ModifierStorage {
                 match entry.calculation_method() {
                     ModifierCalculationMethod::Addition => val.0 += entry.value(),
                     ModifierCalculationMethod::Multiplicative => val.1 += entry.value(),
-                    ModifierCalculationMethod::Multiply => val.2 *= entry.value(),
+                    ModifierCalculationMethod::Multiply => val.2 += entry.value(),
                 };
 
             });
