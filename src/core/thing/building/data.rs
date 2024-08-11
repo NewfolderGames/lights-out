@@ -76,31 +76,13 @@ impl Building {
                 entry.upkeeps
                     .iter()
                     .for_each(|v| {
-
-                        let mut value = v.value;
-                        value += modifier_storage.value(&format!("building.{}.upkeep", &self.asset.name), ModifierCalculationMethod::Base);
-                        value *= 1f64 + modifier_storage.value(&format!("building.{}.upkeep", &self.asset.name), ModifierCalculationMethod::Multiplicative);
-                        value *= 1f64 * modifier_storage.value(&format!("building.{}.upkeep", &self.asset.name), ModifierCalculationMethod::Multiply);
-                        value += modifier_storage.value(&format!("building.{}.upkeep", &self.asset.name), ModifierCalculationMethod::Addition);
-                        value *= self.active_count as f64;
-
-                        upkeeps.insert(v.name.to_string(), value);
-
+                        upkeeps.insert(v.name.to_string(), get_modified_value("upkeep", v.value, self.active_count, &self.asset, modifier_storage));
                     });
 
                 entry.outputs
                     .iter()
                     .for_each(|v| {
-
-                        let mut value = v.value;
-                        value += modifier_storage.value(&format!("building.{}.output", &self.asset.name), ModifierCalculationMethod::Base);
-                        value *= 1f64 + modifier_storage.value(&format!("building.{}.output", &self.asset.name), ModifierCalculationMethod::Multiplicative);
-                        value *= 1f64 * modifier_storage.value(&format!("building.{}.output", &self.asset.name), ModifierCalculationMethod::Multiply);
-                        value += modifier_storage.value(&format!("building.{}.output", &self.asset.name), ModifierCalculationMethod::Addition);
-                        value *= self.active_count as f64;
-
-                        outputs.insert(v.name.to_string(), value);
-
+                        outputs.insert(v.name.to_string(), get_modified_value("output", v.value, self.active_count, &self.asset, modifier_storage));
                     });
 
                 entry.modifiers
@@ -111,7 +93,6 @@ impl Building {
                             "base" => ModifierCalculationMethod::Base,
                             "addition" => ModifierCalculationMethod::Addition,
                             "multiplicative" => ModifierCalculationMethod::Multiplicative,
-                            "multiply" => ModifierCalculationMethod::Multiply,
                             _ => panic!("wrong modifier calculation method"),
                         };
 
@@ -122,16 +103,7 @@ impl Building {
                 entry.storages
                     .iter()
                     .for_each(|v| {
-
-                        let mut value = v.value;
-                        value += modifier_storage.value(&format!("building.{}.storage", &self.asset.name), ModifierCalculationMethod::Base);
-                        value *= 1f64 + modifier_storage.value(&format!("building.{}.storage", &self.asset.name), ModifierCalculationMethod::Multiplicative);
-                        value *= 1f64 * modifier_storage.value(&format!("building.{}.storage", &self.asset.name), ModifierCalculationMethod::Multiply);
-                        value += modifier_storage.value(&format!("building.{}.storage", &self.asset.name), ModifierCalculationMethod::Addition);
-                        value *= self.active_count as f64;
-
-                        storages.insert(v.name.to_string(), value);
-
+                        storages.insert(v.name.to_string(), get_modified_value("storage", v.value, self.active_count, &self.asset, modifier_storage));
                     });
 
             }
@@ -239,4 +211,26 @@ impl Building {
 
     }
 
+}
+
+fn get_modified_value(key: &str, original_value: f64, active_count: i32, asset: &BuildingAsset, modifier_storage: &ModifierStorage) -> f64 {
+
+    let mut value = original_value;
+    value +=
+        modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Base) +
+        modifier_storage.value(&format!("building.category.{}.{}", &asset.category, key), ModifierCalculationMethod::Base) +
+        modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Base);
+    value *= 1f64 +
+        modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Multiplicative) +
+        modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Multiplicative) +
+        modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Multiplicative);
+    value +=
+        modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Addition) +
+        modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Addition) +
+        modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Addition);
+    value *= 1f64 + modifier_storage.value("global.speed", ModifierCalculationMethod::Multiplicative);
+    value *= active_count as f64;
+    
+    value
+    
 }

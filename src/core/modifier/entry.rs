@@ -59,7 +59,6 @@ pub enum ModifierCalculationMethod {
     Base,
     Addition,
     Multiplicative,
-    Multiply,
 }
 
 impl ModifierCalculationMethod {
@@ -70,7 +69,6 @@ impl ModifierCalculationMethod {
             ModifierCalculationMethod::Base => "base",
             ModifierCalculationMethod::Addition => "addition",
             ModifierCalculationMethod::Multiplicative => "multiplicative",
-            ModifierCalculationMethod::Multiply => "multiply",
         }
         
     }
