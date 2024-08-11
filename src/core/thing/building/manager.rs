@@ -2,12 +2,16 @@ use crate::core::modifier::ModifierStorage;
 use crate::core::thing::building::{Building, BuildingAsset};
 use std::collections::hash_map::Iter;
 use std::collections::HashMap;
+use crate::core::thing::resource::ResourceStorage;
 
 pub struct BuildingManager {
     
     buildings: HashMap<String, Building>,
-
-    is_dirty: bool,
+    
+    calculated_upkeeps: ResourceStorage,
+    calculated_outputs: ResourceStorage,
+    calculated_modifiers: ModifierStorage,
+    calculated_storages: ResourceStorage,
 
 }
 
@@ -17,17 +21,30 @@ impl BuildingManager {
         
         Self {
             buildings: HashMap::new(),
-            is_dirty: false,
+            calculated_upkeeps: ResourceStorage::new(),
+            calculated_outputs: ResourceStorage::new(),
+            calculated_modifiers: ModifierStorage::new(),
+            calculated_storages: ResourceStorage::new(),
         }
         
     }
     
     pub fn calculate(&mut self, modifier_storage: &ModifierStorage) {
+
+        self.calculated_upkeeps.clear();
+        self.calculated_outputs.clear();
+        self.calculated_modifiers.clear();
+        self.calculated_storages.clear();
         
-        if !self.is_dirty { return; }
-        
-        
-        self.is_dirty = false;
+        for (_, building) in self.buildings.iter_mut() {
+            
+            building.calculate(modifier_storage);
+            self.calculated_upkeeps.combine(building.calculated_upkeeps());
+            self.calculated_outputs.combine(building.calculated_outputs());
+            self.calculated_modifiers.combine(building.calculated_modifiers());
+            self.calculated_storages.combine(building.calculated_storages());
+            
+        }
         
     }
 
@@ -86,46 +103,51 @@ impl BuildingManager {
 
     pub fn add_count(&mut self, name: &str, count: i32) {
 
-        if let Some(v) = self.buildings.get_mut(name) {
-
-            v.add_count(count);
-            self.is_dirty = true;
-
-        }
+        if let Some(v) = self.buildings.get_mut(name) { v.add_count(count); }
 
     }
 
     pub fn set_count(&mut self, name: &str, count: i32) {
 
-        if let Some(v) = self.buildings.get_mut(name) {
-
-            v.set_count(count);
-            self.is_dirty = true;
-
-        }
+        if let Some(v) = self.buildings.get_mut(name) { v.set_count(count); }
 
     }
 
     pub fn add_active_count(&mut self, name: &str, count: i32) {
 
-        if let Some(v) = self.buildings.get_mut(name) {
-
-            v.add_active_count(count);
-            self.is_dirty = true;
-
-        }
+        if let Some(v) = self.buildings.get_mut(name) { v.add_active_count(count); }
 
     }
 
     pub fn set_active_count(&mut self, name: &str, count: i32) {
 
-        if let Some(v) = self.buildings.get_mut(name) {
-
-            v.set_active_count(count);
-            self.is_dirty = true
-
-        }
+        if let Some(v) = self.buildings.get_mut(name) { v.set_active_count(count); }
 
     }
+
+    pub fn calculated_upkeeps(&self) -> &ResourceStorage {
+        
+        &self.calculated_upkeeps
+        
+    }
+    
+    pub fn calculated_outputs(&self) -> &ResourceStorage {
+        
+        &self.calculated_outputs
+        
+    }
+    
+    pub fn calculated_modifiers(&self) -> &ModifierStorage {
+        
+        &self.calculated_modifiers
+        
+    }
+    
+    pub fn calculated_storages(&self) -> &ResourceStorage {
+        
+        &self.calculated_storages
+        
+    }
+    
     
 }

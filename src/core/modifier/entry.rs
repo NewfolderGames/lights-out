@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct ModifierEntry {
     name: String,
     value: f64,

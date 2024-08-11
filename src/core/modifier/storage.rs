@@ -1,3 +1,4 @@
+use std::collections::hash_map::Iter;
 use std::collections::HashMap;
 
 use super::{ModifierCalculationMethod, ModifierEntry};
@@ -21,8 +22,14 @@ impl ModifierStorage {
         self.modifiers.clear();
         
     }
-    
-    pub fn add_modifier(&mut self, modifier_entry: ModifierEntry) {
+
+    pub fn iter(&self) -> Iter<String, ModifierEntry> {
+
+        self.modifiers.iter()
+
+    }
+
+    pub fn add(&mut self, modifier_entry: ModifierEntry) {
         
         if let Some(entry) = self.modifiers.get_mut(modifier_entry.key().as_str()) {
             
@@ -43,6 +50,24 @@ impl ModifierStorage {
             .map(|v| v.value())
             .unwrap_or(0f64)
         
+    }
+
+    pub fn combine(&mut self, other: &ModifierStorage) {
+
+        other.iter().for_each(|(_, e)| {
+            
+            if let Some(entry ) = self.modifiers.get_mut(e.key().as_str()) {
+                
+                entry.add_value(e.value());
+                
+            } else {
+                
+                self.modifiers.insert(e.key(), e.clone());
+                
+            }
+            
+        });
+
     }
  
 }

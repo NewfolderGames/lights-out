@@ -29,12 +29,22 @@ impl ThingManager {
         }
 
     }
+    
+    pub fn prepare(&mut self) {
+
+        let mut current_tick_modifiers = ModifierStorage::new();
+        
+        self.building_manager.calculate(&self.prev_tick_modifiers);
+
+        self.prev_tick_modifiers = current_tick_modifiers;
+        
+    }
 
     pub fn tick(&mut self) {
         
         let mut current_tick_modifiers = ModifierStorage::new();
         
-        
+        self.building_manager.calculate(&self.prev_tick_modifiers);
         
         self.prev_tick_modifiers = current_tick_modifiers;
         

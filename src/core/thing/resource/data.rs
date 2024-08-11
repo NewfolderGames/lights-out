@@ -45,8 +45,20 @@ impl Resource {
         self.count = count;
 
     }
+    
+    pub fn set_capacity(&mut self, capacity: f64) {
+        
+        self.capacity = capacity;
+        
+    }
 
-    pub fn set_unlocked(&mut self, is_unlocked: bool) {
+    pub fn is_unlocked(&self) -> bool {
+        
+        self.is_unlocked
+        
+    }
+    
+    pub fn unlock(&mut self, is_unlocked: bool) {
 
         self.is_unlocked = is_unlocked;
 
