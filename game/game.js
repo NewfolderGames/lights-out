@@ -10,12 +10,12 @@ self.onmessage = e => {
 
 };
 
-function startTickerEvent(e) {
+function startTickerEvent() {
 
 	setInterval(() => {
 
 		self.postMessage({ topic: "tick", value: ++ticks });
 
-	}, 1000);
+	}, 500);
 
 }
