@@ -15,7 +15,7 @@ pub struct Building {
     calculated_output: HashMap<String, f64>,
     calculated_modifiers: ModifierStorage,
     calculated_storages: HashMap<String, f64>,
-    
+
     is_unlocked: bool,
     unlocked_productions: HashSet<String>,
 
@@ -30,7 +30,7 @@ impl From<BuildingAsset> for Building {
 
         let mut unlocked_productions = HashSet::new();
         unlocked_productions.insert("default".to_string());
-        
+
         Self {
             asset,
             count: 0,
@@ -59,20 +59,18 @@ impl Building {
 
     pub fn calculate(&mut self, modifier_storage: &ModifierStorage) {
 
-        if !self.is_dirty { return; }
-        
         let mut upkeeps: HashMap<String, f64> = HashMap::new();
         let mut outputs: HashMap<String, f64> = HashMap::new();
         let mut modifiers = ModifierStorage::new();
         let mut storages: HashMap<String, f64> = HashMap::new();
-        
+
         self.active_productions.iter().for_each(|production_name| {
-            
+
             let production = self.asset
                 .productions
                 .iter()
                 .find(|data| data.name == *production_name);
-            
+
             if let Some(entry) = production {
 
                 entry.upkeeps
@@ -87,7 +85,7 @@ impl Building {
                         value *= self.active_count as f64;
 
                         upkeeps.insert(v.name.to_string(), value);
-                        
+
                     });
 
                 entry.outputs
@@ -102,9 +100,9 @@ impl Building {
                         value *= self.active_count as f64;
 
                         outputs.insert(v.name.to_string(), value);
-                        
+
                     });
-                
+
                 entry.modifiers
                     .iter()
                     .for_each(|v| {
@@ -116,9 +114,9 @@ impl Building {
                             "multiply" => ModifierCalculationMethod::Multiply,
                             _ => panic!("wrong modifier calculation method"),
                         };
-                        
+
                         modifiers.add_modifier(ModifierEntry::new(v.name.clone(), v.value, calculation_method));
-                        
+
                     });
 
                 entry.storages
@@ -131,28 +129,28 @@ impl Building {
                         value *= 1f64 * modifier_storage.value(&format!("building.{}.storage", &self.asset.name), ModifierCalculationMethod::Multiply);
                         value += modifier_storage.value(&format!("building.{}.storage", &self.asset.name), ModifierCalculationMethod::Addition);
                         value *= self.active_count as f64;
-                        
+
                         storages.insert(v.name.to_string(), value);
-                        
+
                     });
-                
+
             }
-            
+
         });
-        
+
         self.calculated_upkeep = upkeeps;
         self.calculated_output = outputs;
         self.calculated_modifiers = modifiers;
         self.calculated_storages = storages;
-        
+
         self.is_dirty = false;
 
     }
-    
+
     pub fn calculated_upkeep(&self) -> &HashMap<String, f64> {
-        
+
         &self.calculated_upkeep
-        
+
     }
 
     pub fn calculated_output(&self) -> &HashMap<String, f64> {
