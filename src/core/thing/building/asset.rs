@@ -10,6 +10,8 @@ pub struct BuildingAsset {
 
     /// Resource price of the building.
     pub prices: Vec<BuildingPrice>,
+    /// Multiplier of the building price.
+    pub price_multiplier: f64,
     /// Size of the building.
     pub size: f64,
 

@@ -15,6 +15,7 @@ pub struct Building {
     calculated_output: HashMap<String, f64>,
     calculated_modifiers: ModifierStorage,
     calculated_storages: HashMap<String, f64>,
+    calculated_prices: HashMap<String, f64>,
 
     is_unlocked: bool,
     unlocked_productions: HashSet<String>,
@@ -41,6 +42,7 @@ impl From<BuildingAsset> for Building {
             calculated_output: HashMap::new(),
             calculated_modifiers: ModifierStorage::new(),
             calculated_storages: HashMap::new(),
+            calculated_prices: HashMap::new(),
             is_unlocked: false,
             unlocked_productions: unlocked_productions,
         }
@@ -63,6 +65,7 @@ impl Building {
         let mut outputs: HashMap<String, f64> = HashMap::new();
         let mut modifiers = ModifierStorage::new();
         let mut storages: HashMap<String, f64> = HashMap::new();
+        let mut prices: HashMap<String, f64> = HashMap::new();
 
         self.active_productions.iter().for_each(|production_name| {
 
@@ -109,11 +112,18 @@ impl Building {
             }
 
         });
+        
+        self.asset.prices.iter().for_each(|price| {
+            
+            prices.insert(price.name.to_string(), price.value * self.asset.price_multiplier.powi(self.count));
+            
+        });
 
         self.calculated_upkeep = upkeeps;
         self.calculated_output = outputs;
         self.calculated_modifiers = modifiers;
         self.calculated_storages = storages;
+        self.calculated_prices = prices;
 
         self.is_dirty = false;
 
@@ -135,6 +145,18 @@ impl Building {
 
         &self.calculated_modifiers
 
+    }
+    
+    pub fn calculated_storages(&self) -> &HashMap<String, f64> {
+        
+        &self.calculated_storages
+        
+    }
+    
+    pub fn calculated_prices(&self) -> &HashMap<String, f64> {
+        
+        &self.calculated_prices
+        
     }
 
     pub fn is_dirty(&self) -> bool {

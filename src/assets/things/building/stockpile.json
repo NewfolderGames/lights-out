@@ -6,6 +6,7 @@
       "wood": 10
     }
   ],
+  "price_multiplier": 1.10,
   "size": 1,
   "productions": [
     {
