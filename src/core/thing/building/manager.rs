@@ -2,12 +2,10 @@ use crate::core::modifier::ModifierStorage;
 use crate::core::thing::building::{Building, BuildingAsset};
 use std::collections::hash_map::Iter;
 use std::collections::HashMap;
-use crate::core::thing::resource::ResourceStorage;
+use crate::core::thing::resource::{ResourceManager, ResourceStorage};
 
 pub struct BuildingManager {
-    
     buildings: HashMap<String, Building>,
-    
     calculated_upkeeps: ResourceStorage,
     calculated_outputs: ResourceStorage,
     calculated_modifiers: ModifierStorage,
@@ -29,21 +27,35 @@ impl BuildingManager {
         
     }
     
-    pub fn calculate(&mut self, modifier_storage: &ModifierStorage) {
+    pub fn calculate(&mut self, modifier_storage: &ModifierStorage, resource_manager: &ResourceManager) {
 
         self.calculated_upkeeps.clear();
         self.calculated_outputs.clear();
         self.calculated_modifiers.clear();
         self.calculated_storages.clear();
-        
+
         for (_, building) in self.buildings.iter_mut() {
             
             building.calculate(modifier_storage);
-            self.calculated_upkeeps.combine(building.calculated_upkeeps());
-            self.calculated_outputs.combine(building.calculated_outputs());
-            self.calculated_modifiers.combine(building.calculated_modifiers());
-            self.calculated_storages.combine(building.calculated_storages());
-            
+            let is_drained = building.calculated_upkeeps()
+                .iter()
+                .any(|(name, _)| {
+                    resource_manager.is_drained(name)
+                });
+
+            if is_drained {
+
+                self.calculated_upkeeps.combine(building.calculated_upkeeps());
+
+            } else {
+
+                self.calculated_upkeeps.combine(building.calculated_upkeeps());
+                self.calculated_outputs.combine(building.calculated_outputs());
+                self.calculated_modifiers.combine(building.calculated_modifiers());
+                self.calculated_storages.combine(building.calculated_storages());
+
+            }
+
         }
         
     }
@@ -148,6 +160,5 @@ impl BuildingManager {
         &self.calculated_storages
         
     }
-    
     
 }

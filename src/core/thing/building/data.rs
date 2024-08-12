@@ -20,6 +20,8 @@ pub struct Building {
 
     is_unlocked: bool,
     unlocked_productions: HashSet<String>,
+    
+    is_deficit: bool,
 
 }
 
@@ -46,6 +48,7 @@ impl From<BuildingAsset> for Building {
             calculated_prices: ResourceStorage::new(),
             is_unlocked: false,
             unlocked_productions: unlocked_productions,
+            is_deficit: false,
         }
 
     }
@@ -82,7 +85,7 @@ impl Building {
                     .for_each(|v| {
                         self.calculated_upkeeps.add(v.name.to_string(), get_modified_value("upkeep", v.value, self.active_count, &self.asset, modifier_storage));
                     });
-
+                
                 entry.outputs
                     .iter()
                     .for_each(|v| {
@@ -226,6 +229,18 @@ impl Building {
         self.active_count = count;
         self.is_dirty = true;
 
+    }
+    
+    pub fn is_deficit(&self) -> bool {
+        
+        self.is_deficit
+        
+    }
+    
+    pub fn set_deficit(&mut self, is_deficit: bool) {
+        
+        self.is_deficit = is_deficit;
+        
     }
 
 }
