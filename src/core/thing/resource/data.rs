@@ -1,8 +1,9 @@
-use crate::core::modifier::ModifierStorage;
+use crate::core::modifier::{ModifierCalculationMethod, ModifierEntry, ModifierStorage};
 use crate::core::thing::resource::asset::ResourceAsset;
 
+/// Resource
 pub struct Resource {
-
+    
     asset: ResourceAsset,
 
     count: f64,
@@ -43,8 +44,12 @@ impl Resource {
     }
     
     pub fn calculate(&mut self) {
+
+        self.calculated_modifiers.clear();
         
-        unimplemented!();
+        self.asset.modifiers.iter().for_each(|m| {
+            self.calculated_modifiers.add(ModifierEntry::new(m.name.clone(), m.value, ModifierCalculationMethod::from_str(m.name.as_str())));
+        });
         
     }
     
@@ -68,6 +73,12 @@ impl Resource {
         self.count = count;
 
     }
+    
+    pub fn capacity(&self) -> f64 {
+        
+        self.capacity
+        
+    }
 
     pub fn set_capacity(&mut self, capacity: f64) {
 
@@ -78,6 +89,12 @@ impl Resource {
     pub fn is_unlocked(&self) -> bool {
 
         self.is_unlocked
+
+    }
+
+    pub fn unlock(&mut self, is_unlocked: bool) {
+
+        self.is_unlocked = is_unlocked;
 
     }
 
@@ -119,12 +136,6 @@ impl Resource {
     pub fn is_drained(&self) -> bool {
 
         self.consumption > self.production && self.count == 0f64
-
-    }
-    
-    pub fn unlock(&mut self, is_unlocked: bool) {
-
-        self.is_unlocked = is_unlocked;
 
     }
     

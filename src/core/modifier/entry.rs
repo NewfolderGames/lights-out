@@ -64,6 +64,35 @@ pub enum ModifierCalculationMethod {
 
 impl ModifierCalculationMethod {
     
+    /// Convert `str` to `ModifierCalculationMethod`.
+    /// 
+    /// # Panic
+    /// 
+    /// This method will panic if wrong method is provided.
+    pub fn from_str(method: &str) -> ModifierCalculationMethod {
+
+        match method {
+            "base" => ModifierCalculationMethod::Base,
+            "addition" => ModifierCalculationMethod::Addition,
+            "multiplicative" => ModifierCalculationMethod::Multiplicative,
+            _ => panic!("wrong modifier calculation method"),
+        }
+        
+    }
+
+    /// Safe version of `from_str` method.
+    pub fn from_str_safe(method: &str) -> Result<ModifierCalculationMethod, String> {
+
+        match method {
+            "base" => Ok(ModifierCalculationMethod::Base),
+            "addition" => Ok(ModifierCalculationMethod::Addition),
+            "multiplicative" => Ok(ModifierCalculationMethod::Multiplicative),
+            _ => Err("wrong modifier calculation method".to_string()),
+        }
+        
+    }
+    
+    /// Convert `ModifierCalculationMethod` into key that can be used as "key".
     pub fn key(&self) -> &'static str {
 
         match self {
