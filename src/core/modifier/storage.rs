@@ -3,6 +3,7 @@ use std::collections::HashMap;
 
 use super::{ModifierCalculationMethod, ModifierEntry};
 
+/// Modifier storage
 pub struct ModifierStorage {
     modifiers: HashMap<String, ModifierEntry>,
 }

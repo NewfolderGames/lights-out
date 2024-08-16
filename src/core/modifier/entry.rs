@@ -68,7 +68,7 @@ impl ModifierCalculationMethod {
     /// 
     /// # Panic
     /// 
-    /// This method will panic if wrong method is provided.
+    /// This method will panic if the wrong method is provided.
     pub fn from_str(method: &str) -> ModifierCalculationMethod {
 
         match method {
@@ -92,7 +92,7 @@ impl ModifierCalculationMethod {
         
     }
     
-    /// Convert `ModifierCalculationMethod` into key that can be used as "key".
+    /// Convert `ModifierCalculationMethod` into a key that can be used as a hashmap's "key".
     pub fn key(&self) -> &'static str {
 
         match self {

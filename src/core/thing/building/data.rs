@@ -1,4 +1,4 @@
-use super::BuildingAsset;
+use super::{BuildingAsset, BuildingManager};
 use crate::core::modifier::{ModifierCalculationMethod, ModifierEntry, ModifierStorage};
 use crate::core::thing::resource::ResourceStorage;
 use std::collections::HashSet;
@@ -13,8 +13,6 @@ pub struct Building {
     count: i32,
     /// Active building count.
     active_count: i32,
-    /// Active building productions.
-    active_productions: HashSet<String>,
 
     /// Calculated building's upkeep.
     calculated_upkeeps: ResourceStorage,
@@ -27,10 +25,13 @@ pub struct Building {
     /// Calculated building's price.
     calculated_prices: ResourceStorage,
 
-    /// Is the building unlocked?
-    is_unlocked: bool,
+    /// Active building productions.
+    active_productions: HashSet<String>,
     /// Unlocked productions or the building.
     unlocked_productions: HashSet<String>,
+
+    /// Is the building unlocked?
+    is_unlocked: bool,
 
 }
 
@@ -49,14 +50,14 @@ impl From<BuildingAsset> for Building {
             asset,
             count: 0,
             active_count: 0,
-            active_productions: HashSet::new(),
             calculated_upkeeps: ResourceStorage::new(),
             calculated_outputs: ResourceStorage::new(),
             calculated_modifiers: ModifierStorage::new(),
             calculated_storages: ResourceStorage::new(),
             calculated_prices: ResourceStorage::new(),
+            active_productions,
+            unlocked_productions,
             is_unlocked: false,
-            unlocked_productions: unlocked_productions,
         }
 
     }
@@ -71,6 +72,133 @@ impl Building {
         &self.asset
 
     }
+
+    // Is the building unlocked?
+    pub fn is_unlocked(&self) -> bool {
+
+        self.is_unlocked
+
+    }
+
+    /// Unlock the building.
+    pub fn unlock(&mut self) {
+
+        self.is_unlocked = true;
+
+    }
+
+}
+
+/// Implementations related to building's count.
+impl Building {
+
+    /// Gets count of the building.
+    pub fn count(&self) -> i32 {
+
+        self.count
+
+    }
+
+    /// Adds count to the building.
+    pub fn add_count(&mut self, count: i32) {
+
+        self.count += count;
+
+    }
+
+    /// Sets the building's count.
+    pub fn set_count(&mut self, count: i32) {
+
+        self.count = count;
+
+    }
+
+    /// Active building count.
+    pub fn active_count(&self) -> i32 {
+
+        self.active_count
+
+    }
+
+    /// Adds active building count.
+    pub fn add_active_count(&mut self, count: i32) {
+
+        self.active_count += count
+
+    }
+
+    /// Sets active building count.
+    pub fn set_active_count(&mut self, count: i32) {
+
+        self.active_count = count;
+
+    }
+
+}
+
+/// Implementations related to building's production.
+impl Building {
+
+    /// Gets active productions
+    pub fn active_productions(&self) -> &HashSet<String> {
+        
+        &self.active_productions
+        
+    }
+    
+    /// Gets unlocked productions.
+    pub fn unlocked_productions(&self) -> &HashSet<String> {
+
+        &self.unlocked_productions
+
+    }
+
+    /// Unlock production of the building.
+    pub fn unlock_production(&mut self, key: &str) {
+
+        if self.asset.productions.iter().any(|v| v.name == *key) {
+
+            self.unlocked_productions.insert(key.to_string());
+
+        }
+
+    }
+
+    /// Is the production unlocked?
+    pub fn is_production_unlocked(&self, key: &str) -> bool {
+
+        self.unlocked_productions.iter().any(|v| v == key)
+
+    }
+
+    /// Is the production unlocked?
+    pub fn is_production_active(&self, key: &str) -> bool {
+
+        self.active_productions.iter().any(|v| v == key)
+
+    }
+    
+    /// Sets active production.
+    /// 
+    /// The production must be unlocked to change its active state.
+    /// The 'default' production cannot be changed.
+    pub fn set_active_production(&mut self, key: &str, active: bool) {
+        
+        if key == "default" { return; }
+        
+        if self.is_production_unlocked(key) {
+            
+            if active { self.active_productions.insert(key.to_string()); }
+            else { self.active_productions.remove(key); }
+            
+        }
+        
+    }
+
+}
+
+/// Implementation related to building's calculation.
+impl Building {
 
     /// Calculates building's upkeep, output, modifiers, storage and price.
     pub fn calculate(&mut self, modifier_storage: &ModifierStorage) {
@@ -93,13 +221,13 @@ impl Building {
                 entry.upkeeps
                     .iter()
                     .for_each(|v| {
-                        self.calculated_upkeeps.add(v.name.to_string(), get_modifier_value("upkeep", v.value, self.active_count, &self.asset, modifier_storage));
+                        self.calculated_upkeeps.add(v.name.to_string(), Self::get_modifier_value("upkeep", v.value, self.active_count, &self.asset, modifier_storage));
                     });
-                
+
                 entry.outputs
                     .iter()
                     .for_each(|v| {
-                        self.calculated_outputs.add(v.name.to_string(), get_modifier_value("output", v.value, self.active_count, &self.asset, modifier_storage));
+                        self.calculated_outputs.add(v.name.to_string(), Self::get_modifier_value("output", v.value, self.active_count, &self.asset, modifier_storage));
                     });
 
                 entry.modifiers
@@ -111,7 +239,7 @@ impl Building {
                 entry.storages
                     .iter()
                     .for_each(|v| {
-                        self.calculated_storages.add(v.name.to_string(), get_modifier_value("storage", v.value, self.active_count, &self.asset, modifier_storage));
+                        self.calculated_storages.add(v.name.to_string(), Self::get_modifier_value("storage", v.value, self.active_count, &self.asset, modifier_storage));
                     });
 
             }
@@ -161,101 +289,27 @@ impl Building {
 
     }
 
-    // Is the building unlocked?
-    pub fn is_unlocked(&self) -> bool {
+    /// Gets combined modifier value from modifier storage.
+    fn get_modifier_value(key: &str, original_value: f64, active_count: i32, asset: &BuildingAsset, modifier_storage: &ModifierStorage) -> f64 {
 
-        self.is_unlocked
+        let mut value = original_value;
+        value +=
+            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Base) +
+                modifier_storage.value(&format!("building.category.{}.{}", &asset.category, key), ModifierCalculationMethod::Base) +
+                modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Base);
+        value *= 1f64 +
+            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Multiplicative) +
+            modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Multiplicative) +
+            modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Multiplicative);
+        value +=
+            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Addition) +
+                modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Addition) +
+                modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Addition);
+        value *= 1f64 + modifier_storage.value("global.speed", ModifierCalculationMethod::Multiplicative);
+        value *= active_count as f64;
 
-    }
-
-    /// Unlock the building.
-    pub fn unlock(&mut self) {
-
-        self.is_unlocked = true;
-
-    }
-
-    /// Unlock production of the building.
-    pub fn unlock_production(&mut self, key: &str) {
-
-        if self.asset.productions.iter().any(|v| v.name == *key) {
-
-            self.unlocked_productions.insert(key.to_string());
-
-        }
+        value
 
     }
-
-    /// Is the production unlocked?
-    pub fn is_production_unlocked(&self, key: &str) -> bool {
-
-        self.unlocked_productions.iter().any(|v| v == key)
-
-    }
-
-    /// Gets count of the building.
-    pub fn count(&self) -> i32 {
-
-        self.count
-
-    }
-
-    /// Adds count to the building.
-    pub fn add_count(&mut self, count: i32) {
-
-        self.count += count;
-
-    }
-
-    /// Sets the building's count.
-    pub fn set_count(&mut self, count: i32) {
-
-        self.count = count;
-
-    }
-
-    /// Active building count.
-    pub fn active_count(&self) -> i32 {
-
-        self.active_count
-
-    }
-
-    /// Adds active building count.
-    pub fn add_active_count(&mut self, count: i32) {
-
-        self.active_count += count
-
-    }
-
-    /// Sets active building count.
-    pub fn set_active_count(&mut self, count: i32) {
-
-        self.active_count = count;
-
-    }
-
-}
-
-/// Get combined modifier value from modifier storage.
-fn get_modifier_value(key: &str, original_value: f64, active_count: i32, asset: &BuildingAsset, modifier_storage: &ModifierStorage) -> f64 {
-
-    let mut value = original_value;
-    value +=
-        modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Base) +
-        modifier_storage.value(&format!("building.category.{}.{}", &asset.category, key), ModifierCalculationMethod::Base) +
-        modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Base);
-    value *= 1f64 +
-        modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Multiplicative) +
-        modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Multiplicative) +
-        modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Multiplicative);
-    value +=
-        modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Addition) +
-        modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Addition) +
-        modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Addition);
-    value *= 1f64 + modifier_storage.value("global.speed", ModifierCalculationMethod::Multiplicative);
-    value *= active_count as f64;
-
-    value
-
+    
 }

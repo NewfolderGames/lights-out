@@ -4,17 +4,26 @@ use std::collections::hash_map::Iter;
 use std::collections::HashMap;
 use crate::core::thing::resource::{ResourceManager, ResourceStorage};
 
+/// Building manager.
 pub struct BuildingManager {
+    
+    /// Buildings.
     buildings: HashMap<String, Building>,
+    
+    /// Calculated building upkeeps.
     calculated_upkeeps: ResourceStorage,
+    /// Calculated building outputs.
     calculated_outputs: ResourceStorage,
+    /// Calculated building modifiers.
     calculated_modifiers: ModifierStorage,
+    /// Calculated building storages.
     calculated_storages: ResourceStorage,
 
 }
 
 impl BuildingManager {
-    
+
+    /// Creates a new building manager.
     pub fn new() -> Self {
         
         Self {
@@ -27,6 +36,101 @@ impl BuildingManager {
         
     }
     
+    /// Loads building from string.
+    ///
+    /// # Params
+    ///
+    /// - `building_asset_str`: JSON string of building asset.
+    pub fn load_from_str(&mut self, building_asset_str: &str) -> serde_json::Result<()> {
+
+        let result = serde_json::from_str(building_asset_str)?;
+        self.load_from_asset(result);
+        Ok(())
+
+    }
+
+    /// Loads building from asset.
+    pub fn load_from_asset(&mut self, building_asset: BuildingAsset) {
+
+        let building = Building::from(building_asset);
+        self.add(building);
+
+    }
+
+    /// Adds a new building.
+    pub fn add(&mut self, building: Building) {
+
+        self.buildings.insert(building.asset().name.clone(), building);
+
+    }
+
+    /// Iterate through all buildings.
+    pub fn iter(&self) -> Iter<String, Building> {
+
+        self.buildings.iter()
+
+    }
+
+    /// Returns a single building.
+    pub fn get(&self, name: &str) -> Option<&Building> {
+
+        self.buildings.get(name)
+
+    }
+
+    /// Unlocks a building.
+    pub fn unlock(&mut self, name: &str) {
+
+        if let Some(v) = self.buildings.get_mut(name) { v.unlock() }
+
+    }
+
+    /// Unlocks a building production.
+    pub fn unlock_production(&mut self, name: &str, production: &str) {
+
+        if let Some(v) = self.buildings.get_mut(name) { v.unlock_production(production) }
+
+    }
+
+    /// Adds count to a building.
+    pub fn add_count(&mut self, name: &str, count: i32) {
+
+        if let Some(v) = self.buildings.get_mut(name) { v.add_count(count); }
+
+    }
+
+    /// Sets building's count.
+    pub fn set_count(&mut self, name: &str, count: i32) {
+
+        if let Some(v) = self.buildings.get_mut(name) { v.set_count(count); }
+
+    }
+
+    /// Adds active count to a building.
+    pub fn add_active_count(&mut self, name: &str, count: i32) {
+
+        if let Some(v) = self.buildings.get_mut(name) { v.add_active_count(count); }
+
+    }
+
+    /// Sets a building's active count.
+    pub fn set_active_count(&mut self, name: &str, count: i32) {
+
+        if let Some(v) = self.buildings.get_mut(name) { v.set_active_count(count); }
+
+    }
+    
+}
+
+/// Implementation related tro 
+impl BuildingManager {
+
+    /// Calculates all buildings.
+    ///
+    /// # Params
+    ///
+    /// - `modifier_storage`: Modifiers that can be used for calculating buildings.
+    /// - `resource_manager`: Resource manager for checking whether resources are available or not.
     pub fn calculate(&mut self, modifier_storage: &ModifierStorage, resource_manager: &ResourceManager) {
 
         self.calculated_upkeeps.clear();
@@ -35,7 +139,7 @@ impl BuildingManager {
         self.calculated_storages.clear();
 
         for (_, building) in self.buildings.iter_mut() {
-            
+
             building.calculate(modifier_storage);
             let is_drained = building.calculated_upkeeps()
                 .iter()
@@ -57,108 +161,35 @@ impl BuildingManager {
             }
 
         }
-        
-    }
-
-    pub fn load_from_str(&mut self, str: &str) -> Result<(), String> {
-
-        let result: serde_json::Result<BuildingAsset> = serde_json::from_str(str);
-        if let Ok(asset) = result {
-
-            self.add_from_asset(asset);
-            Ok(())
-
-        } else {
-
-            Err("Failed to parse building asset from string".to_string())
-
-        }
 
     }
-
-    pub fn add_from_asset(&mut self, building_asset: BuildingAsset) {
-
-        let building = Building::from(building_asset);
-        self.add(building);
-
-    }
-
-    pub fn add(&mut self, building: Building) {
-
-        self.buildings.insert(building.asset().name.clone(), building);
-
-    }
-
-    pub fn iter(&self) -> Iter<String, Building> {
-
-        self.buildings.iter()
-
-    }
-
-    pub fn get(&self, name: &str) -> Option<&Building> {
-
-        self.buildings.get(name)
-
-    }
-
-    pub fn unlock(&mut self, name: &str) {
-
-        if let Some(v) = self.buildings.get_mut(name) { v.unlock() }
-
-    }
-
-    pub fn unlock_production(&mut self, name: &str, production: &str) {
-
-        if let Some(v) = self.buildings.get_mut(name) { v.unlock_production(production) }
-
-    }
-
-    pub fn add_count(&mut self, name: &str, count: i32) {
-
-        if let Some(v) = self.buildings.get_mut(name) { v.add_count(count); }
-
-    }
-
-    pub fn set_count(&mut self, name: &str, count: i32) {
-
-        if let Some(v) = self.buildings.get_mut(name) { v.set_count(count); }
-
-    }
-
-    pub fn add_active_count(&mut self, name: &str, count: i32) {
-
-        if let Some(v) = self.buildings.get_mut(name) { v.add_active_count(count); }
-
-    }
-
-    pub fn set_active_count(&mut self, name: &str, count: i32) {
-
-        if let Some(v) = self.buildings.get_mut(name) { v.set_active_count(count); }
-
-    }
-
+    
+    /// Returns calculated upkeeps.
     pub fn calculated_upkeeps(&self) -> &ResourceStorage {
-        
+
         &self.calculated_upkeeps
-        
+
     }
-    
+
+    /// Returns calculated outputs.
     pub fn calculated_outputs(&self) -> &ResourceStorage {
-        
+
         &self.calculated_outputs
-        
+
     }
     
+    /// Returns calculated modifiers.
     pub fn calculated_modifiers(&self) -> &ModifierStorage {
-        
+
         &self.calculated_modifiers
-        
+
     }
-    
+
+    // Returns calculated storages.
     pub fn calculated_storages(&self) -> &ResourceStorage {
-        
+
         &self.calculated_storages
-        
+
     }
     
 }
