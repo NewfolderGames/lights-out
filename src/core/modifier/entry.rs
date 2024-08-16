@@ -87,7 +87,7 @@ impl ModifierCalculationMethod {
             "base" => Ok(ModifierCalculationMethod::Base),
             "flat" => Ok(ModifierCalculationMethod::Flat),
             "additive" => Ok(ModifierCalculationMethod::Additive),
-            _ => Err("wrong modifier calculation method".to_string()),
+            _ => Err(format!("wrong modifier calculation method '{method}'")),
         }
         
     }
