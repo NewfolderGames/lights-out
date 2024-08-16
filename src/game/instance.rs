@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 use crate::assets::get_asset_list;
-use crate::core::{ThingManager, ThingManagerLoadType};
+use crate::core::{ThingManager, ThingManagerLoadError};
 
 #[wasm_bindgen]
 pub struct Game {
@@ -97,20 +97,21 @@ impl Game {
 
     #[wasm_bindgen]
     pub fn load_thing_from_string(&mut self, thing_type: &str, thing: &str) {
-        
-        let result = match thing_type {
-            "building" => self.thing_manager.load_from_str(ThingManagerLoadType::Building, thing),
-            _ => Err("wrong thing type".to_string()),
-        };
-        
-        if let Err(message) = result {
-            
-            eprintln!("thing loader failed to load thing from string, {message}");
-            
-        } else {
-            
-            println!("thing loader {thing_type} loaded");
-            
+
+        match self.thing_manager.load_from_str(thing_type, thing) {
+            Err(err) => {
+
+                match err {
+                    ThingManagerLoadError::WrongLoadType(_) => eprintln!("failed to load a thing, wrong load type '{thing_type}'"),
+                    ThingManagerLoadError::ParseError(serde_json_error) => eprintln!("failed to load a thing, failed to parse thing from str, {serde_json_error}")
+                }
+
+            },
+            Ok(_) => {
+
+                println!("thing '{thing_type}' loaded!");
+
+            }
         }
         
     }

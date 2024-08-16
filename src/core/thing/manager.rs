@@ -1,3 +1,4 @@
+use thiserror::Error;
 use crate::core::modifier::ModifierStorage;
 use crate::core::thing::building::BuildingManager;
 use crate::core::thing::resource::ResourceManager;
@@ -66,18 +67,21 @@ impl ThingManager {
     
 }
 
-// Thing loader
-
-pub enum ThingManagerLoadType {
-    Building,
+#[derive(Error, Debug)]
+pub enum ThingManagerLoadError {
+    #[error("wrong load type '{0}' provided")]
+    WrongLoadType(String),
+    #[error("failed to parse thing")]
+    ParseError(#[from]serde_json::Error),
 }
 
 impl ThingManager {
     
-    pub fn load_from_str(&mut self, thing_manager_load_type: ThingManagerLoadType, string: &str) -> Result<(), String> {
+    pub fn load_from_str(&mut self, load_type: &str, string: &str) -> Result<(), ThingManagerLoadError> {
         
-        match thing_manager_load_type {
-            ThingManagerLoadType::Building => self.building_manager.load_from_str(string)
+        match load_type {
+            "building" => Ok(self.building_manager.load_from_str(string)?),
+            _ => Err(ThingManagerLoadError::WrongLoadType(load_type.to_string()))
         }
         
     }
