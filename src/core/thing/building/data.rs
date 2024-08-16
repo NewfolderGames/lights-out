@@ -120,7 +120,7 @@ impl Building {
 
         self.asset.prices.iter().for_each(|price| {
 
-            self.calculated_prices.add(price.name.to_string(), price.value * self.asset.price_multiplier.powi(self.count));
+            self.calculated_prices.add(price.name.to_string(), (price.value * self.asset.price_multiplier.powi(self.count)).floor());
 
         });
 
