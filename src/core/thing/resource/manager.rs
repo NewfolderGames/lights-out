@@ -2,16 +2,20 @@ use std::collections::HashMap;
 use crate::core::modifier::ModifierStorage;
 use crate::core::thing::resource::{Resource, ResourceStorage};
 
+/// Resource manager.
 pub struct ResourceManager {
     
+    /// Resources.
     resources: HashMap<String, Resource>,
     
+    /// Calculated resource modifiers.
     calculated_modifiers: ModifierStorage,
     
 }
 
 impl ResourceManager{
     
+    /// Creates a new resource manager.
     pub fn new() -> Self {
         
         Self {
@@ -21,21 +25,21 @@ impl ResourceManager{
         
     }
     
+    /// Calculates resources.
     pub fn calculate(&mut self) {
         
         self.calculated_modifiers.clear();
-        self.resources
-            .iter_mut()
-            .for_each(|(_, r)| {
+        for (_, resource) in self.resources.iter_mut() {
 
-                r.produce();
-                r.calculate();
-                self.calculated_modifiers.combine(r.calculated_modifiers())
-                
-            });
+            resource.produce();
+            resource.calculate();
+            self.calculated_modifiers.combine(resource.calculated_modifiers())
+            
+        }
         
     }
     
+    /// Sets production of resources.
     pub fn set_production(&mut self, resource_storage: &ResourceStorage) {
         
         resource_storage
@@ -46,6 +50,7 @@ impl ResourceManager{
         
     }
     
+    /// Sets consumption of resources.
     pub fn set_consumption(&mut self, resource_storage: &ResourceStorage) {
 
         resource_storage
@@ -56,12 +61,14 @@ impl ResourceManager{
         
     }
     
+    /// Returns calculated modifiers of the resources.
     pub fn calculated_modifiers(&self) -> &ModifierStorage {
         
         &self.calculated_modifiers
         
     }
     
+    /// Returns true if the resource is currently empty and consumption is bigger than production.
     pub fn is_drained(&self, name: &str) -> bool {
         
         self.resources
@@ -71,6 +78,7 @@ impl ResourceManager{
         
     }
     
+    /// Returns count of the resource.
     pub fn count(&self, name: &str) -> f64 {
         
         self.resources

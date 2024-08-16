@@ -1,4 +1,4 @@
-use super::{BuildingAsset, BuildingManager};
+use super::BuildingAsset;
 use crate::core::modifier::{ModifierCalculationMethod, ModifierEntry, ModifierStorage};
 use crate::core::thing::resource::ResourceStorage;
 use std::collections::HashSet;
@@ -37,7 +37,7 @@ pub struct Building {
 
 impl From<BuildingAsset> for Building {
 
-    /// Create a building object from asset.
+    /// Creates a building object from an asset.
     fn from(asset: BuildingAsset) -> Self {
 
         let mut active_productions = HashSet::new();
@@ -66,7 +66,7 @@ impl From<BuildingAsset> for Building {
 
 impl Building {
 
-    /// Get the asset of the building.
+    /// Returns the building's asset.
     pub fn asset(&self) -> &BuildingAsset {
 
         &self.asset
@@ -80,7 +80,7 @@ impl Building {
 
     }
 
-    /// Unlock the building.
+    /// Unlocks the building.
     pub fn unlock(&mut self) {
 
         self.is_unlocked = true;
@@ -92,7 +92,7 @@ impl Building {
 /// Implementations related to building's count.
 impl Building {
 
-    /// Gets count of the building.
+    /// Returns count of the building.
     pub fn count(&self) -> i32 {
 
         self.count
@@ -139,14 +139,14 @@ impl Building {
 /// Implementations related to building's production.
 impl Building {
 
-    /// Gets active productions
+    /// Returns active productions.
     pub fn active_productions(&self) -> &HashSet<String> {
         
         &self.active_productions
         
     }
     
-    /// Gets unlocked productions.
+    /// Returns unlocked productions.
     pub fn unlocked_productions(&self) -> &HashSet<String> {
 
         &self.unlocked_productions
