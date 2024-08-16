@@ -58,8 +58,8 @@ impl ModifierEntry {
 #[derive(Copy, Clone)]
 pub enum ModifierCalculationMethod {
     Base,
-    Addition,
-    Multiplicative,
+    Flat,
+    Additive,
 }
 
 impl ModifierCalculationMethod {
@@ -73,8 +73,8 @@ impl ModifierCalculationMethod {
 
         match method {
             "base" => ModifierCalculationMethod::Base,
-            "addition" => ModifierCalculationMethod::Addition,
-            "multiplicative" => ModifierCalculationMethod::Multiplicative,
+            "flat" => ModifierCalculationMethod::Flat,
+            "additive" => ModifierCalculationMethod::Additive,
             _ => panic!("wrong modifier calculation method"),
         }
         
@@ -85,8 +85,8 @@ impl ModifierCalculationMethod {
 
         match method {
             "base" => Ok(ModifierCalculationMethod::Base),
-            "addition" => Ok(ModifierCalculationMethod::Addition),
-            "multiplicative" => Ok(ModifierCalculationMethod::Multiplicative),
+            "flat" => Ok(ModifierCalculationMethod::Flat),
+            "additive" => Ok(ModifierCalculationMethod::Additive),
             _ => Err("wrong modifier calculation method".to_string()),
         }
         
@@ -97,8 +97,8 @@ impl ModifierCalculationMethod {
 
         match self {
             ModifierCalculationMethod::Base => "base",
-            ModifierCalculationMethod::Addition => "addition",
-            ModifierCalculationMethod::Multiplicative => "multiplicative",
+            ModifierCalculationMethod::Flat => "flat",
+            ModifierCalculationMethod::Additive => "additive",
         }
         
     }

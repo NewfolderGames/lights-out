@@ -209,7 +209,7 @@ impl Building {
         self.calculated_storages.clear();
         self.calculated_prices.clear();
 
-        self.active_productions.iter().for_each(|production_name| {
+        for production_name in self.active_productions.iter() {
 
             let production = self.asset
                 .productions
@@ -218,39 +218,39 @@ impl Building {
 
             if let Some(entry) = production {
 
-                entry.upkeeps
-                    .iter()
-                    .for_each(|v| {
-                        self.calculated_upkeeps.add(v.name.to_string(), Self::get_modifier_value("upkeep", v.value, self.active_count, &self.asset, modifier_storage));
-                    });
+                for upkeep in entry.upkeeps.iter() {
 
-                entry.outputs
-                    .iter()
-                    .for_each(|v| {
-                        self.calculated_outputs.add(v.name.to_string(), Self::get_modifier_value("output", v.value, self.active_count, &self.asset, modifier_storage));
-                    });
+                    self.calculated_upkeeps.add(upkeep.name.to_string(), Self::get_modifier_value("upkeep", upkeep.value, self.active_count, &self.asset, modifier_storage));
+                    
+                }
 
-                entry.modifiers
-                    .iter()
-                    .for_each(|v| {
-                        self.calculated_modifiers.add(ModifierEntry::new(v.name.clone(), v.value, ModifierCalculationMethod::from_str(v.name.as_str())));
-                    });
+                for output in entry.outputs.iter() {
 
-                entry.storages
-                    .iter()
-                    .for_each(|v| {
-                        self.calculated_storages.add(v.name.to_string(), Self::get_modifier_value("storage", v.value, self.active_count, &self.asset, modifier_storage));
-                    });
+                    self.calculated_outputs.add(output.name.to_string(), Self::get_modifier_value("output", output.value, self.active_count, &self.asset, modifier_storage));
+
+                }
+
+                for modifier in entry.modifiers.iter() {
+
+                    self.calculated_modifiers.add(ModifierEntry::new(modifier.name.clone(), modifier.value * self.active_count as f64, ModifierCalculationMethod::from_str(modifier.calculation.as_str())));
+
+                }
+
+                for storage in entry.storages.iter() {
+
+                    self.calculated_storages.add(storage.name.to_string(), Self::get_modifier_value("storage", storage.value, self.active_count, &self.asset, modifier_storage));
+
+                }
 
             }
-
-        });
-
-        self.asset.prices.iter().for_each(|price| {
+            
+        }
+        
+        for price in self.asset.prices.iter() {
 
             self.calculated_prices.add(price.name.to_string(), (price.value * self.asset.price_multiplier.powi(self.count)).floor());
-
-        });
+            
+        }
 
     }
 
@@ -298,14 +298,14 @@ impl Building {
                 modifier_storage.value(&format!("building.category.{}.{}", &asset.category, key), ModifierCalculationMethod::Base) +
                 modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Base);
         value *= 1f64 +
-            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Multiplicative) +
-            modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Multiplicative) +
-            modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Multiplicative);
+            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Additive);
         value +=
-            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Addition) +
-                modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Addition) +
-                modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Addition);
-        value *= 1f64 + modifier_storage.value("global.speed", ModifierCalculationMethod::Multiplicative);
+            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Flat) +
+                modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Flat) +
+                modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Flat);
+        value *= 1f64 + modifier_storage.value("global.speed", ModifierCalculationMethod::Additive);
         value *= active_count as f64;
 
         value

@@ -42,22 +42,30 @@ impl ResourceManager{
     /// Sets production of resources.
     pub fn set_production(&mut self, resource_storage: &ResourceStorage) {
         
-        resource_storage
-            .iter()
-            .for_each(|(name, value)| {
-                if let Some(r) = self.resources.get_mut(name) { r.set_production(*value) }
-            });
+        for (name, value) in resource_storage.iter() {
+
+            if let Some(resource) = self.resources.get_mut(name) {
+                
+                resource.set_production(*value);
+                
+            }
+            
+        }
         
     }
     
     /// Sets consumption of resources.
     pub fn set_consumption(&mut self, resource_storage: &ResourceStorage) {
+        
+        for (name, value) in resource_storage.iter() {
 
-        resource_storage
-            .iter()
-            .for_each(|(name, value)| {
-                if let Some(r) = self.resources.get_mut(name) { r.set_consumption(*value) }
-            });
+            if let Some(resource) = self.resources.get_mut(name) {
+
+                resource.set_consumption(*value);
+
+            }
+
+        }
         
     }
     
