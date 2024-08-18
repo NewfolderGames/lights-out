@@ -30,13 +30,13 @@ impl From<ResourceAsset> for Resource {
     fn from(asset: ResourceAsset) -> Self {
 
         Resource {
-            asset,
             count: 0f64,
-            capacity: 0f64,
+            capacity: asset.base_capacity,
             production: 0f64,
             consumption: 0f64,
             calculated_modifiers: ModifierStorage::new(),
             is_unlocked: false,
+            asset,
         }
 
     }
@@ -86,7 +86,7 @@ impl Resource {
     /// Sets the resource's capacity.
     pub fn set_capacity(&mut self, capacity: f64) {
 
-        self.capacity = capacity;
+        self.capacity = self.asset.base_capacity + capacity;
 
     }
 

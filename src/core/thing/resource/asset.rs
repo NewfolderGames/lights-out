@@ -8,7 +8,9 @@ pub struct ResourceAsset {
     /// Category of the resource.
     pub category: String,
 
-    // Modifiers that resource passively generates.
+    /// Base capacity value.
+    pub base_capacity: f64,
+    /// Modifiers that resource passively generates.
     pub modifiers: Vec<ResourceModifiers>,
 
 }
