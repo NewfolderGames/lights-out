@@ -35,34 +35,6 @@ impl BuildingManager {
         }
         
     }
-    
-    /// Loads building from string.
-    ///
-    /// # Params
-    ///
-    /// - `building_asset_str`: JSON string of building asset.
-    pub fn load_from_str(&mut self, building_asset_str: &str) -> serde_json::Result<()> {
-
-        let result = serde_json::from_str(building_asset_str)?;
-        self.load_from_asset(result);
-        Ok(())
-
-    }
-
-    /// Loads building from asset.
-    pub fn load_from_asset(&mut self, building_asset: BuildingAsset) {
-
-        let building = Building::from(building_asset);
-        self.add(building);
-
-    }
-
-    /// Adds a new building.
-    pub fn add(&mut self, building: Building) {
-
-        self.buildings.insert(building.asset().name.clone(), building);
-
-    }
 
     /// Iterate through all buildings.
     pub fn iter(&self) -> Iter<String, Building> {
@@ -122,7 +94,40 @@ impl BuildingManager {
     
 }
 
-/// Implementation related tro 
+/// Implementations related to loading and registering buildings.
+impl BuildingManager {
+
+    /// Loads building from string.
+    ///
+    /// # Params
+    ///
+    /// - `building_asset_str`: JSON string of building asset.
+    pub fn load_from_str(&mut self, building_asset_str: &str) -> serde_json::Result<()> {
+
+        let result = serde_json::from_str(building_asset_str)?;
+        self.load_from_asset(result);
+        Ok(())
+
+    }
+
+    /// Loads building from asset.
+    pub fn load_from_asset(&mut self, building_asset: BuildingAsset) {
+
+        let building = Building::from(building_asset);
+        self.add(building);
+
+    }
+
+    /// Adds a new building.
+    pub fn add(&mut self, building: Building) {
+
+        self.buildings.insert(building.asset().name.clone(), building);
+
+    }
+    
+}
+
+/// Implementations related to calculation.
 impl BuildingManager {
 
     /// Calculates all buildings.

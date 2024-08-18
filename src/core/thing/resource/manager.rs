@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use crate::core::modifier::ModifierStorage;
-use crate::core::thing::resource::{Resource, ResourceStorage};
+use crate::core::thing::resource::{Resource, ResourceAsset, ResourceStorage};
 
 /// Resource manager.
 pub struct ResourceManager {
@@ -96,4 +96,37 @@ impl ResourceManager{
         
     }
     
+}
+
+/// Implementations related to loading and registering resources.
+impl ResourceManager {
+
+    /// Loads resource from string.
+    ///
+    /// # Params
+    ///
+    /// - `resource_asset_str`: JSON string of building asset.
+    pub fn load_from_str(&mut self, resource_asset_str: &str) -> serde_json::Result<()> {
+
+        let result = serde_json::from_str(resource_asset_str)?;
+        self.load_from_asset(result);
+        Ok(())
+
+    }
+
+    /// Loads building from asset.
+    pub fn load_from_asset(&mut self, building_asset: ResourceAsset) {
+
+        let building = Resource::from(building_asset);
+        self.add(building);
+
+    }
+
+    /// Adds a new building.
+    pub fn add(&mut self, building: Resource) {
+
+        self.resources.insert(building.asset().name.clone(), building);
+
+    }
+
 }

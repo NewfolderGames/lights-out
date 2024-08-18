@@ -167,7 +167,7 @@ impl Resource {
         self.calculated_modifiers.clear();
 
         self.asset.modifiers.iter().for_each(|m| {
-            self.calculated_modifiers.add(ModifierEntry::new(m.name.clone(), m.value, ModifierCalculationMethod::from_str(m.name.as_str())));
+            self.calculated_modifiers.add(ModifierEntry::new(m.name.clone(), m.value, ModifierCalculationMethod::from_str(m.calculation.as_str())));
         });
 
     }
