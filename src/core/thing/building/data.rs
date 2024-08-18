@@ -220,13 +220,13 @@ impl Building {
 
                 for upkeep in entry.upkeeps.iter() {
 
-                    self.calculated_upkeeps.add(upkeep.name.to_string(), Self::get_modifier_value("upkeep", upkeep.value, self.active_count, &self.asset, modifier_storage));
-                    
+                    self.calculated_upkeeps.add(upkeep.name.to_string(), self.create_modified_upkeep_value(upkeep.value, modifier_storage));
+
                 }
 
                 for output in entry.outputs.iter() {
 
-                    self.calculated_outputs.add(output.name.to_string(), Self::get_modifier_value("output", output.value, self.active_count, &self.asset, modifier_storage));
+                    self.calculated_outputs.add(output.name.to_string(), self.create_modified_output_value(output.value, modifier_storage));
 
                 }
 
@@ -238,18 +238,18 @@ impl Building {
 
                 for storage in entry.storages.iter() {
 
-                    self.calculated_storages.add(storage.name.to_string(), Self::get_modifier_value("storage", storage.value, self.active_count, &self.asset, modifier_storage));
+                    self.calculated_storages.add(storage.name.to_string(), self.create_modified_storage_value(storage.value, modifier_storage));
 
                 }
 
             }
-            
+
         }
-        
+
         for price in self.asset.prices.iter() {
 
-            self.calculated_prices.add(price.name.to_string(), (price.value * self.asset.price_multiplier.powi(self.count)).floor());
-            
+            self.calculated_prices.add(price.name.to_string(), self.create_modified_price(price.value, modifier_storage));
+
         }
 
     }
@@ -289,27 +289,127 @@ impl Building {
 
     }
 
-    /// Gets combined modifier value from modifier storage.
-    fn get_modifier_value(key: &str, original_value: f64, active_count: i32, asset: &BuildingAsset, modifier_storage: &ModifierStorage) -> f64 {
+    /// Creates upkeep value using modifiers.
+    fn create_modified_upkeep_value(&self, original_value: f64, modifier_storage: &ModifierStorage) -> f64 {
 
         let mut value = original_value;
-        value +=
-            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Base) +
-                modifier_storage.value(&format!("building.category.{}.{}", &asset.category, key), ModifierCalculationMethod::Base) +
-                modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Base);
+        value += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.upkeep", self.asset.name), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.category.{}.upkeep", self.asset.category), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.global.upkeep"), ModifierCalculationMethod::Base);
         value *= 1f64 +
-            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Additive) +
-            modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Additive) +
-            modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Additive);
-        value +=
-            modifier_storage.value(&format!("building.name.{}.{}", asset.name, key), ModifierCalculationMethod::Flat) +
-                modifier_storage.value(&format!("building.category.{}.{}", asset.category, key), ModifierCalculationMethod::Flat) +
-                modifier_storage.value(&format!("building.global.{}", key), ModifierCalculationMethod::Flat);
-        value *= 1f64 + modifier_storage.value("global.speed", ModifierCalculationMethod::Additive);
-        value *= active_count as f64;
+            modifier_storage.value(&format!("building.name.{}.upkeep", self.asset.name), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.category.{}.upkeep", self.asset.category), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.global.upkeep"), ModifierCalculationMethod::Additive);
+        value += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.upkeep", self.asset.name), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.category.{}.upkeep", self.asset.category), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.global.upkeep"), ModifierCalculationMethod::Flat);
+        value *= (1f64 + modifier_storage.value("global.speed", ModifierCalculationMethod::Additive).min(0f64));
+        value *= self.active_count as f64;
 
-        value
+        value.max(0f64).floor()
+        
+    }
+
+    /// Creates output value using modifiers.
+    fn create_modified_output_value(&self, original_value: f64, modifier_storage: &ModifierStorage) -> f64 {
+
+        let mut value = original_value;
+        value += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.output", self.asset.name), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.category.{}.output", self.asset.category), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.global.output"), ModifierCalculationMethod::Base);
+        value *= 1f64 +
+            modifier_storage.value(&format!("building.name.{}.output", self.asset.name), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.category.{}.output", self.asset.category), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.global.output"), ModifierCalculationMethod::Additive);
+        value += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.output", self.asset.name), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.category.{}.output", self.asset.category), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.global.output"), ModifierCalculationMethod::Flat);
+        value *= (1f64 + modifier_storage.value("global.speed", ModifierCalculationMethod::Additive)).min(0f64);
+        value *= self.active_count as f64;
+
+        value.max(0f64).floor()
 
     }
-    
+
+    /// Creates storage value using modifiers.
+    fn create_modified_storage_value(&self, original_value: f64, modifier_storage: &ModifierStorage) -> f64 {
+
+        let mut value = original_value;
+        value += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.storage", self.asset.name), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.category.{}.storage", self.asset.category), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.global.storage"), ModifierCalculationMethod::Base);
+        value *= 1f64 +
+            modifier_storage.value(&format!("building.name.{}.storage", self.asset.name), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.category.{}.storage", self.asset.category), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.global.storage"), ModifierCalculationMethod::Additive);
+        value += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.storage", self.asset.name), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.category.{}.storage", self.asset.category), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.global.storage"), ModifierCalculationMethod::Flat);
+        value *= self.active_count as f64;
+
+        value.max(0f64).floor()
+
+    }
+
+    /// Creates price value using modifiers.
+    fn create_modified_price(&self, original_value: f64, modifier_storage: &ModifierStorage) -> f64 {
+
+        let mut value = original_value;
+        let mut value_division = 1f64;
+        let mut price_multiplier = self.asset.price_multiplier.max(1f64);
+        let mut price_multiplier_division = 1f64;
+        
+        value += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.price", self.asset.name), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.category.{}.price", self.asset.category), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.global.price"), ModifierCalculationMethod::Base);
+        value *= 1f64 +
+            modifier_storage.value(&format!("building.name.{}.price", self.asset.name), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.category.{}.price", self.asset.category), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.global.price"), ModifierCalculationMethod::Additive);
+        value += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.price", self.asset.name), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.category.{}.price", self.asset.category), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.global.price"), ModifierCalculationMethod::Flat);
+
+        value_division += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.price_division", self.asset.name), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.category.{}.price_division", self.asset.category), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.global.price_division"), ModifierCalculationMethod::Base);
+        value_division *= 1f64 +
+            modifier_storage.value(&format!("building.name.{}.price_division", self.asset.name), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.category.{}.price_division", self.asset.category), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.global.price_division"), ModifierCalculationMethod::Additive);
+        value_division += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.price_division", self.asset.name), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.category.{}.price_division", self.asset.category), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.global.price_division"), ModifierCalculationMethod::Flat);
+
+        price_multiplier_division += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.price_multiplier_division", self.asset.name), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.category.{}.price_multiplier_division", self.asset.category), ModifierCalculationMethod::Base) +
+            modifier_storage.value(&format!("building.global.price_multiplier_division"), ModifierCalculationMethod::Base);
+        price_multiplier_division *= 1f64 +
+            modifier_storage.value(&format!("building.name.{}.price_multiplier_division", self.asset.name), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.category.{}.price_multiplier_division", self.asset.category), ModifierCalculationMethod::Additive) +
+            modifier_storage.value(&format!("building.global.price_multiplier_division"), ModifierCalculationMethod::Additive);
+        price_multiplier_division += 0f64 +
+            modifier_storage.value(&format!("building.name.{}.price_multiplier_division", self.asset.name), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.category.{}.price_multiplier_division", self.asset.category), ModifierCalculationMethod::Flat) +
+            modifier_storage.value(&format!("building.global.price_multiplier_division"), ModifierCalculationMethod::Flat);
+
+        price_multiplier = ((price_multiplier - 1f64) / price_multiplier_division).max(0f64) + 1f64;
+        
+        value = value / value_division.min(1f64) * price_multiplier.powi(self.count);
+        
+        value.max(1f64).floor()
+        
+    }
+
 }
