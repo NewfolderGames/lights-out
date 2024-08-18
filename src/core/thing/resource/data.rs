@@ -86,7 +86,7 @@ impl Resource {
     /// Sets the resource's capacity.
     pub fn set_capacity(&mut self, capacity: f64) {
 
-        self.capacity = self.asset.base_capacity + capacity;
+        self.capacity = (self.asset.base_capacity + capacity).max(self.asset.base_capacity);
 
     }
 
