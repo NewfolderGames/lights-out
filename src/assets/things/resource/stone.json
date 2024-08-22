@@ -1,0 +1,6 @@
+{
+  "name": "stone",
+  "category": "raw_resource",
+  "base_capacity": 10,
+  "modifiers": []
+}

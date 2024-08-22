@@ -81,6 +81,7 @@ impl ThingManager {
         
         match load_type {
             "building" => Ok(self.building_manager.load_from_str(string)?),
+            "resource" => Ok(self.resource_manager.load_from_str(string)?),
             _ => Err(ThingManagerLoadError::WrongLoadType(load_type.to_string()))
         }
         
