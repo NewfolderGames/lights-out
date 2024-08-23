@@ -2,11 +2,13 @@ use thiserror::Error;
 use crate::core::modifier::ModifierStorage;
 use crate::core::thing::building::BuildingManager;
 use crate::core::thing::resource::ResourceManager;
+use crate::core::thing::upgrade::UpgradeManager;
 
 pub struct ThingManager {
 
     building_manager: BuildingManager,
     resource_manager: ResourceManager,
+    upgrade_manager: UpgradeManager,
     
     prev_tick_modifiers: ModifierStorage,
 
@@ -31,6 +33,7 @@ impl ThingManager {
         Self {
             building_manager: BuildingManager::new(),
             resource_manager: ResourceManager::new(),
+            upgrade_manager: UpgradeManager::new(),
             prev_tick_modifiers: ModifierStorage::new(),
             is_first_tick: true,
         }
@@ -47,10 +50,12 @@ impl ThingManager {
             self.resource_manager.set_consumption(self.building_manager.calculated_upkeeps());
 
         }
-        
+
         self.resource_manager.calculate();
+        self.upgrade_manager.calculate();
         self.building_manager.calculate(&self.prev_tick_modifiers, &self.resource_manager);
-        
+
+        current_tick_modifiers.combine(self.upgrade_manager.calculated_modifiers());
         current_tick_modifiers.combine(self.resource_manager.calculated_modifiers());
         current_tick_modifiers.combine(self.building_manager.calculated_modifiers());
         

@@ -61,3 +61,28 @@ impl Upgrade {
     }
     
 }
+
+impl Upgrade {
+    
+    /// Calculate upgrade's modifiers and price.
+    pub fn calculate() {
+        
+        unimplemented!()
+        
+    }
+
+    /// Upgrade's calculated modifiers.
+    pub fn calculated_modifiers() {
+
+        unimplemented!()
+
+    }
+    
+    /// Upgrade's calculated price.
+    pub fn calculated_price() {
+
+        unimplemented!()
+        
+    }
+    
+}
