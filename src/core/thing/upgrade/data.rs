@@ -65,23 +65,23 @@ impl Upgrade {
 impl Upgrade {
     
     /// Calculate upgrade's modifiers and price.
-    pub fn calculate() {
+    pub fn calculate(&mut self) {
         
         unimplemented!()
         
     }
 
     /// Upgrade's calculated modifiers.
-    pub fn calculated_modifiers() {
+    pub fn calculated_modifiers(&self) -> &ModifierStorage {
 
-        unimplemented!()
+        &self.calculated_modifiers
 
     }
     
     /// Upgrade's calculated price.
-    pub fn calculated_price() {
+    pub fn calculated_prices(&self) -> &ResourceStorage {
 
-        unimplemented!()
+        &self.calculated_prices
         
     }
     
