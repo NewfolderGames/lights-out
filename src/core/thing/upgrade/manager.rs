@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-use crate::core::modifier::ModifierStorage;
 use super::{Upgrade, UpgradeAsset};
+use crate::core::thing::modifier::ModifierStorage;
+use std::collections::HashMap;
 
 pub struct UpgradeManager {
 
@@ -25,7 +25,7 @@ impl UpgradeManager {
 
 impl UpgradeManager {
 
-     /// Loads building from string.
+    /// Loads upgrade from string.
     ///
     /// # Params
     ///

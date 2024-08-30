@@ -1,5 +1,5 @@
 use super::BuildingAsset;
-use crate::core::modifier::{ModifierCalculationMethod, ModifierEntry, ModifierStorage};
+use crate::core::thing::modifier::{ModifierCalculationMethod, ModifierEntry, ModifierStorage};
 use crate::core::thing::resource::ResourceStorage;
 use std::collections::HashSet;
 

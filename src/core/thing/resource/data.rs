@@ -1,4 +1,4 @@
-use crate::core::modifier::{ModifierCalculationMethod, ModifierEntry, ModifierStorage};
+use crate::core::thing::modifier::{ModifierCalculationMethod, ModifierEntry, ModifierStorage};
 use crate::core::thing::resource::asset::ResourceAsset;
 
 /// Resource

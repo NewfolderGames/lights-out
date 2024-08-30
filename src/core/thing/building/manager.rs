@@ -1,8 +1,8 @@
-use crate::core::modifier::ModifierStorage;
 use crate::core::thing::building::{Building, BuildingAsset};
+use crate::core::thing::modifier::ModifierStorage;
+use crate::core::thing::resource::{ResourceManager, ResourceStorage};
 use std::collections::hash_map::Iter;
 use std::collections::HashMap;
-use crate::core::thing::resource::{ResourceManager, ResourceStorage};
 
 /// Building manager.
 pub struct BuildingManager {

@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-use crate::core::modifier::ModifierStorage;
+use crate::core::thing::modifier::ModifierStorage;
 use crate::core::thing::resource::{Resource, ResourceAsset, ResourceStorage};
+use std::collections::HashMap;
 
 /// Resource manager.
 pub struct ResourceManager {

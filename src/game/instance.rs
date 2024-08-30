@@ -1,6 +1,6 @@
-use wasm_bindgen::prelude::wasm_bindgen;
 use crate::assets::get_asset_list;
 use crate::core::{ThingManager, ThingManagerLoadError};
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 pub struct Game {

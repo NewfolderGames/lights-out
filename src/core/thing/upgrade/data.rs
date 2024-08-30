@@ -1,4 +1,4 @@
-use crate::core::modifier::ModifierStorage;
+use crate::core::thing::modifier::ModifierStorage;
 use crate::core::thing::resource::ResourceStorage;
 use crate::core::thing::upgrade::asset::UpgradeAsset;
 

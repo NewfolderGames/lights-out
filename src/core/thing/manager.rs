@@ -1,8 +1,8 @@
-use thiserror::Error;
-use crate::core::modifier::ModifierStorage;
 use crate::core::thing::building::BuildingManager;
+use crate::core::thing::modifier::ModifierStorage;
 use crate::core::thing::resource::ResourceManager;
 use crate::core::thing::upgrade::UpgradeManager;
+use thiserror::Error;
 
 pub struct ThingManager {
 
